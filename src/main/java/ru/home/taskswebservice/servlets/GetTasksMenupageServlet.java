@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@WebServlet(urlPatterns = "/tasks")
-public class GetTasksStartPageServlet extends HttpServlet {
+@WebServlet(urlPatterns = "/tasksmenu")
+public class GetTasksMenupageServlet extends HttpServlet {
 
     private Map<Integer, Task> tasks;
 
@@ -33,6 +33,6 @@ public class GetTasksStartPageServlet extends HttpServlet {
             throws ServletException, IOException {
 
         req.setAttribute("tasks", tasks.values());
-        req.getRequestDispatcher("/WEB-INF/view/tasksStartPage.jsp").forward(req, resp);
+        req.getRequestDispatcher("/WEB-INF/view/tasksMenuPage.jsp").forward(req, resp);
     }
 }

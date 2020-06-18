@@ -18,6 +18,6 @@ public class LogOutServlet extends HttpServlet {
 
 
         req.getSession().invalidate();
-        resp.sendRedirect("/");
+        resp.sendRedirect("/login");
     }
 }
