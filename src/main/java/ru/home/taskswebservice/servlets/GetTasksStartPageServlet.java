@@ -3,6 +3,7 @@ package ru.home.taskswebservice.servlets;
 import ru.home.taskswebservice.model.Task;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,7 +11,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class GetStartPageServlet extends HttpServlet {
+@WebServlet(urlPatterns = "/tasks")
+public class GetTasksStartPageServlet extends HttpServlet {
 
     private Map<Integer, Task> tasks;
 
@@ -31,6 +33,6 @@ public class GetStartPageServlet extends HttpServlet {
             throws ServletException, IOException {
 
         req.setAttribute("tasks", tasks.values());
-        req.getRequestDispatcher("/WEB-INF/view/startPage.jsp").forward(req, resp);
+        req.getRequestDispatcher("/WEB-INF/view/tasksStartPage.jsp").forward(req, resp);
     }
 }

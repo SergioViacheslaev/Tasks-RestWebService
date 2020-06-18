@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
 <html>
 <head>
     <title>Сервис задач</title>
@@ -49,6 +50,12 @@
 
     <input type="submit" value="Получить данные задачи" name="Ok"><br>
 </form>
+
+<br><br>
+
+
+<a href="<c:url value="/logout"/>">
+    <img src="<%=request.getContextPath()%>/images/logout-button.png" alt="Logo" width="120" height="60"></a>
 
 </body>
 </html>

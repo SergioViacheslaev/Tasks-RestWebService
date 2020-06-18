@@ -2,6 +2,7 @@ package ru.home.taskswebservice.servlets;
 
 
 import ru.home.taskswebservice.model.Task;
+import ru.home.taskswebservice.service.AuthenticationService;
 import ru.home.taskswebservice.util.TaskUtils;
 
 import javax.servlet.ServletContext;
@@ -23,6 +24,7 @@ public class ContextListener implements ServletContextListener {
 
     private Map<Integer, Task> tasks;
     private AtomicInteger idCounter;
+    private AuthenticationService authenticationService;
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -32,8 +34,12 @@ public class ContextListener implements ServletContextListener {
 
         tasks = new ConcurrentHashMap<>();
         idCounter = new AtomicInteger(4);
+        authenticationService = new AuthenticationService();
+
+
         servletContext.setAttribute("tasks", tasks);
         servletContext.setAttribute("idCounter", idCounter);
+        servletContext.setAttribute("authService", authenticationService);
 
         List<Task> taskList = TaskUtils.generateTasks();
         taskList.forEach(task -> this.tasks.put(task.getId(), task));

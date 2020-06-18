@@ -60,7 +60,7 @@ public class UpdateTaskServlet extends HttpServlet {
         final Task task = tasks.get(Integer.parseInt(id));
         req.setAttribute("task", task);
 
-        req.getRequestDispatcher("/WEB-INF/view/update.jsp")
+        req.getRequestDispatcher("/WEB-INF/view/updateTaskPage.jsp")
                 .forward(req, resp);
     }
 }
