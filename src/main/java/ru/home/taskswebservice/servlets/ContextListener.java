@@ -1,6 +1,10 @@
 package ru.home.taskswebservice.servlets;
 
 
+import ru.home.taskswebservice.dao.UserDaoJDBC;
+import ru.home.taskswebservice.dao.datasource.DataSourceHikariPostgreSQL;
+import ru.home.taskswebservice.dao.jdbc.sessionmanager.SessionManager;
+import ru.home.taskswebservice.dao.jdbc.sessionmanager.SessionManagerJdbc;
 import ru.home.taskswebservice.model.Task;
 import ru.home.taskswebservice.service.AuthenticationService;
 import ru.home.taskswebservice.util.TaskUtils;
@@ -9,6 +13,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
+import javax.sql.DataSource;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,7 +39,11 @@ public class ContextListener implements ServletContextListener {
 
         tasks = new ConcurrentHashMap<>();
         idCounter = new AtomicInteger(4);
-        authenticationService = new AuthenticationService();
+
+        DataSource dataSource = DataSourceHikariPostgreSQL.getHikariDataSource();
+        SessionManager sessionManager = new SessionManagerJdbc(dataSource);
+        UserDaoJDBC userDaoJDBC = new UserDaoJDBC(sessionManager);
+        authenticationService = new AuthenticationService(userDaoJDBC);
 
 
         servletContext.setAttribute("tasks", tasks);

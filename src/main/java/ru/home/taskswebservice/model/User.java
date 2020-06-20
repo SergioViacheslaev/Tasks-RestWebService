@@ -1,10 +1,13 @@
 package ru.home.taskswebservice.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @Data
+@NoArgsConstructor
 public class User {
-    private String user_name;
-    private String hashed_password;
+    private int id;
+    private String username;
+    private String password_hash;
 }

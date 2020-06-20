@@ -1,37 +1,38 @@
 package ru.home.taskswebservice.service;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
+import ru.home.taskswebservice.dao.UserDaoJDBC;
+import ru.home.taskswebservice.model.User;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.sql.SQLException;
+import java.util.Optional;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@AllArgsConstructor
 @Slf4j
 public class AuthenticationService implements Authentication {
-    private Map<String, String> usersAuthenticationData = new ConcurrentHashMap<>();
-
-    {
-        usersAuthenticationData.put("admin", DigestUtils.md5Hex("admin123"));
-        log.info("DB: {}", usersAuthenticationData);
-    }
-
-
-    @Override
-    public boolean isUsernamePresent(String userName) {
-        return usersAuthenticationData.containsKey(userName);
-    }
+    private UserDaoJDBC userDaoJDBC;
 
     @Override
     public boolean isAuthenticated(String username, String inputPassword) {
-        if (!isUsernamePresent(username)) return false;
+        try {
+            final Optional<User> optionalUser = userDaoJDBC.findById(username);
+            if (optionalUser.isEmpty()) return false;
 
-        return usersAuthenticationData.get(username).equals(DigestUtils.md5Hex(inputPassword));
+            final User user = optionalUser.get();
+            log.info("User from DB: {}", user);
+
+            return user.getPassword_hash().equals(DigestUtils.md5Hex(inputPassword));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
     }
 }
