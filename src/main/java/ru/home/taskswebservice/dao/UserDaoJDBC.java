@@ -69,7 +69,7 @@ public class UserDaoJDBC implements DAO<User, String> {
     }
 
     @Override
-    public List<User> getAllById(Object id) throws SQLException {
+    public List<User> findAllByPrimaryKey(Object pkey) throws SQLException {
         return null;
     }
 

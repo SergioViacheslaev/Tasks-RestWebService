@@ -1,59 +1,54 @@
 package ru.home.taskswebservice.servlets;
 
 
+import lombok.SneakyThrows;
+import ru.home.taskswebservice.dao.TaskDaoJDBC;
 import ru.home.taskswebservice.model.Task;
-import ru.home.taskswebservice.util.TaskUtils;
+import ru.home.taskswebservice.util.TimeUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 
 public class AddTaskServlet extends HttpServlet {
-    private Map<Integer, Task> tasks;
-
-    private AtomicInteger idCounter;
+    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+    private TaskDaoJDBC taskDao;
 
     @Override
     public void init() throws ServletException {
-        final Object tasks = getServletContext().getAttribute("tasks");
 
-        if (!(tasks instanceof ConcurrentHashMap)) {
+        final Object taskDAO = getServletContext().getAttribute("taskDAO");
+
+        if (!(taskDAO instanceof TaskDaoJDBC)) {
             throw new IllegalStateException("Your repo does not initialize!");
         } else {
-            this.tasks = (ConcurrentHashMap<Integer, Task>) tasks;
+            this.taskDao = (TaskDaoJDBC) taskDAO;
         }
-
-        idCounter = (AtomicInteger) getServletContext().getAttribute("idCounter");
-
     }
 
+    @SneakyThrows
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         req.setCharacterEncoding("UTF-8");
 
-        if (TaskUtils.requestIsValid(req)) {
+        final String title = req.getParameter("title");
+        final String description = req.getParameter("description");
+        final LocalDate deadline_date = TimeUtils.convertToLocalDateViaDate(sdf.parse(req.getParameter("deadline_date")));
+        final boolean done = Boolean.parseBoolean(req.getParameter("done"));
 
-            final String title = req.getParameter("title");
-            final String description = req.getParameter("description");
+        final Task task = new Task();
+        task.setTitle(title);
+        task.setDescription(description);
+        task.setDeadline_date(deadline_date);
+        task.setDone(done);
 
-            final Task task = new Task();
-            final int id = this.idCounter.getAndIncrement();
-            task.setId(id);
-            task.setTitle(title);
-            task.setDescription(description);
-
-            tasks.put(id, task);
-
-        }
-
-        resp.sendRedirect(req.getContextPath() + "/");
+        taskDao.insertRecord(task);
+        resp.sendRedirect(req.getContextPath() + "/tasksmenu");
     }
 
 

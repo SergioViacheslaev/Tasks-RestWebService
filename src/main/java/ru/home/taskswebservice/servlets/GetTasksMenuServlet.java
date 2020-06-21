@@ -32,7 +32,7 @@ public class GetTasksMenuServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         String username = (String) req.getSession(false).getAttribute("username");
-        req.setAttribute("tasks", taskDao.getAllById(username));
+        req.setAttribute("tasks", taskDao.findAllByPrimaryKey(username));
         req.getRequestDispatcher("/WEB-INF/view/tasksMenuPage.jsp").forward(req, resp);
     }
 }

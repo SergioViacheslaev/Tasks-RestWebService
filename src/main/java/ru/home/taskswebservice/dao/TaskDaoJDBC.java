@@ -14,16 +14,8 @@ import java.util.Optional;
 @Slf4j
 @Getter
 public class TaskDaoJDBC implements DAO<Task, Long> {
-    /**
-     * Connection of database.
-     */
     private final SessionManager sessionManager;
 
-    /**
-     * Init database connection.
-     *
-     * @param sessionManager of database.
-     */
     public TaskDaoJDBC(final SessionManager sessionManager) {
         this.sessionManager = sessionManager;
     }
@@ -31,18 +23,26 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
 
     @Override
     public long insertRecord(final Task task) throws SQLException {
-        Connection connection = sessionManager.getCurrentSession();
+        sessionManager.beginSession();
 
-        try (PreparedStatement pst = connection.prepareStatement(SQLTask.INSERT.QUERY, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection connection = sessionManager.getCurrentSession();
+             PreparedStatement pst = connection.prepareStatement(SQLTask.INSERT.QUERY, Statement.RETURN_GENERATED_KEYS)) {
             pst.setString(1, task.getTitle());
             pst.setString(2, task.getDescription());
+            pst.setDate(3, Date.valueOf(task.getDeadline_date()));
+            pst.setBoolean(4, task.isDone());
+
             pst.executeUpdate();
             try (ResultSet rs = pst.getGeneratedKeys()) {
                 rs.next();
-                return rs.getLong(1);
+                long id = rs.getLong(1);
+                sessionManager.commitSession();
+
+                return id;
             }
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
+            sessionManager.rollbackSession();
             throw ex;
         }
 
@@ -50,8 +50,33 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
     }
 
     @Override
-    public Optional<Task> findById(Long aLong) {
-        return Optional.empty();
+    public Optional<Task> findById(Long id) throws SQLException {
+        Task task = null;
+        sessionManager.beginSession();
+        try (Connection connection = sessionManager.getCurrentSession();
+             PreparedStatement pst = connection.prepareStatement(SQLTask.GET_TASK_BY_ID.QUERY)) {
+            pst.setLong(1, id);
+
+            try (ResultSet rs = pst.executeQuery()) {
+
+
+                if (rs.next()) {
+                    task = new Task();
+                    task.setId(Integer.parseInt(rs.getString("id")));
+                    task.setTitle(rs.getString("title"));
+                    task.setDescription(rs.getString("description"));
+                    task.setDeadline_date(TimeUtils.convertToLocalDateViaSqlDate(rs.getDate("deadline_date")));
+                    task.setDone(rs.getBoolean("done"));
+                }
+            }
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
+            sessionManager.rollbackSession();
+            throw ex;
+        }
+
+        return Optional.ofNullable(task);
+
     }
 
     @Override
@@ -65,8 +90,8 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
     }
 
     @Override
-    public List<Task> getAllById(Object id) throws SQLException {
-        String username = (String) id;
+    public List<Task> findAllByPrimaryKey(Object pkey) throws SQLException {
+        String username = (String) pkey;
         List<Task> userTasks = new ArrayList<>();
 
         sessionManager.beginSession();
@@ -99,13 +124,14 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
      * SQL queries for users table.
      */
     enum SQLTask {
-        INSERT("INSERT INTO task (title, description) VALUES ((?), (?))"),
+        INSERT("INSERT INTO tasks (title, description, deadline_date, done) VALUES ((?), (?),(?), (?))"),
         GET_TASKS_BY_USERNAME("SELECT tasks.id, tasks.title, tasks.description," +
                 " tasks.deadline_date, tasks.done" +
                 " from users" +
                 " INNER JOIN tasks_users on users.id = tasks_users.user_id" +
                 " INNER JOIN tasks on tasks.id = tasks_users.task_id" +
-                " WHERE users.username = (?)");
+                " WHERE users.username = (?)"),
+        GET_TASK_BY_ID("SELECT * from tasks WHERE id=(?)");
 
         String QUERY;
 
