@@ -8,6 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
@@ -34,7 +35,8 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
 
         if (authService.isAuthenticated(username, password)) {
-            request.getSession();
+            final HttpSession userSession = request.getSession();
+            userSession.setAttribute("username", username);
             response.sendRedirect("/tasksmenu");
         } else {
             response.setCharacterEncoding("UTF-8");

@@ -18,6 +18,8 @@
     <ul>
         Название: <c:out value="${task.title}"/> <br>
         Описание: <c:out value="${task.description}"/> <br>
+        Срок выполнения: <c:out value="${task.deadline_date}"/> <br>
+        Выполнена: <c:out value="${task.done}"/> <br>
 
         <form method="get" action="<c:url value='/update_task'/>">
             <input type="number" hidden name="id" value="${task.id}"/>
@@ -39,6 +41,8 @@
 
     <label>Название <input type="text" name="title"></label><br>
     <label>Описание <input type="text" name="description"></label><br>
+    <label>Срок выполнения <input type="date" name="deadline_date"></label><br>
+    <label>Выполнена <input type="checkbox" name="done"></label><br>
 
     <input type="submit" value="Ok" name="Ok"><br>
 </form>

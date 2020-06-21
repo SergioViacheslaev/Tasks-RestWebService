@@ -8,23 +8,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 /**
+ * UserDAO
+ *
  * @author Sergei Viacheslaev
  */
 @Slf4j
 public class UserDaoJDBC implements DAO<User, String> {
-    /**
-     * Connection of database.
-     */
+
     private final SessionManager sessionManager;
 
-    /**
-     * Init database connection.
-     *
-     * @param sessionManager of database.
-     */
     public UserDaoJDBC(final SessionManager sessionManager) {
         this.sessionManager = sessionManager;
     }
@@ -32,7 +28,7 @@ public class UserDaoJDBC implements DAO<User, String> {
 
     @Override
     public long insertRecord(User user) throws SQLException {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -64,12 +60,17 @@ public class UserDaoJDBC implements DAO<User, String> {
 
     @Override
     public boolean update(User model) {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean delete(User model) {
-        return false;
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<User> getAllById(Object id) throws SQLException {
+        return null;
     }
 
     /**

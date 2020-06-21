@@ -1,6 +1,7 @@
 package ru.home.taskswebservice.dao;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 public interface DAO<Entity, Id> {
@@ -11,4 +12,6 @@ public interface DAO<Entity, Id> {
     boolean update(Entity model);
 
     boolean delete(Entity model);
+
+    List<Entity> getAllById(Object id) throws SQLException;
 }

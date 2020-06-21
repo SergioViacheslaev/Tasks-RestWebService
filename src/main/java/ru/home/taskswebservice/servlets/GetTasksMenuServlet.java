@@ -1,6 +1,7 @@
 package ru.home.taskswebservice.servlets;
 
-import ru.home.taskswebservice.model.Task;
+import lombok.SneakyThrows;
+import ru.home.taskswebservice.dao.TaskDaoJDBC;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -8,31 +9,30 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @WebServlet(urlPatterns = "/tasksmenu")
-public class GetTasksMenupageServlet extends HttpServlet {
+public class GetTasksMenuServlet extends HttpServlet {
 
-    private Map<Integer, Task> tasks;
+    private TaskDaoJDBC taskDao;
 
     @Override
     public void init() throws ServletException {
 
-        final Object task = getServletContext().getAttribute("tasks");
+        final Object taskDAO = getServletContext().getAttribute("taskDAO");
 
-        if (!(task instanceof ConcurrentHashMap)) {
+        if (!(taskDAO instanceof TaskDaoJDBC)) {
             throw new IllegalStateException("Your repo does not initialize!");
         } else {
-            this.tasks = (ConcurrentHashMap<Integer, Task>) task;
+            this.taskDao = (TaskDaoJDBC) taskDAO;
         }
     }
 
+    @SneakyThrows
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
-        req.setAttribute("tasks", tasks.values());
+        String username = (String) req.getSession(false).getAttribute("username");
+        req.setAttribute("tasks", taskDao.getAllById(username));
         req.getRequestDispatcher("/WEB-INF/view/tasksMenuPage.jsp").forward(req, resp);
     }
 }
