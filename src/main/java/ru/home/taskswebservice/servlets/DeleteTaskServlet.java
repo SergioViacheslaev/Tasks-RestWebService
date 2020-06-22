@@ -1,42 +1,40 @@
 package ru.home.taskswebservice.servlets;
 
 
-import ru.home.taskswebservice.model.Task;
-import ru.home.taskswebservice.util.TaskUtils;
+import lombok.SneakyThrows;
+import ru.home.taskswebservice.dao.TaskDaoJDBC;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class DeleteTaskServlet extends HttpServlet {
 
-    private Map<Integer, Task> tasks;
+    private TaskDaoJDBC taskDao;
 
     @Override
     public void init() throws ServletException {
 
-        final Object tasks = getServletContext().getAttribute("tasks");
+        final Object taskDAO = getServletContext().getAttribute("taskDAO");
 
-        if (!(tasks instanceof ConcurrentHashMap)) {
+        if (!(taskDAO instanceof TaskDaoJDBC)) {
             throw new IllegalStateException("Your repo does not initialize!");
         } else {
-            this.tasks = (ConcurrentHashMap<Integer, Task>) tasks;
+            this.taskDao = (TaskDaoJDBC) taskDAO;
         }
     }
 
+    @SneakyThrows
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
         req.setCharacterEncoding("UTF-8");
+        long task_id = Long.parseLong(req.getParameter("id"));
 
-        if (TaskUtils.idIsNumber(req)) {
-            tasks.remove(Integer.valueOf(req.getParameter("id")));
-        }
-
-        resp.sendRedirect(req.getContextPath() + "/");
+        taskDao.deleteEntityByID(task_id);
+        resp.sendRedirect(req.getContextPath() + "/tasksmenu");
     }
 }

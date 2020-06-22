@@ -39,7 +39,6 @@ public class JsonTaskServlet extends HttpServlet {
 
         try {
             Task task = taskDao.findById(Long.parseLong(id)).orElseThrow(SQLException::new);
-            System.out.println(task.getDeadline_date());
             final String jsonTask = objectMapper.writeValueAsString(task);
             resp.setContentType("application/json; charset=UTF-8");
             PrintWriter out = resp.getWriter();

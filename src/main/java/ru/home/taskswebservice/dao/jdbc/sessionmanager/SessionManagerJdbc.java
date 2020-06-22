@@ -1,7 +1,6 @@
 package ru.home.taskswebservice.dao.jdbc.sessionmanager;
 
 
-
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;

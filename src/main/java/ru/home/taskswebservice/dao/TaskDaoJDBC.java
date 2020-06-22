@@ -59,8 +59,6 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
             pst.setLong(1, id);
 
             try (ResultSet rs = pst.executeQuery()) {
-
-
                 if (rs.next()) {
                     task = new Task();
                     task.setId(Integer.parseInt(rs.getString("id")));
@@ -68,6 +66,10 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
                     task.setDescription(rs.getString("description"));
                     task.setDeadline_date(TimeUtils.convertToLocalDateViaSqlDate(rs.getDate("deadline_date")));
                     task.setDone(rs.getBoolean("done"));
+                    User user = new User();
+                    user.setName(rs.getString("name"));
+                    user.setSurname(rs.getString("surname"));
+                    task.setExecutor(user);
                 }
             }
         } catch (SQLException ex) {
@@ -81,6 +83,33 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
     }
 
     @Override
+    public long insertRecordMultipleTables(Task task, Object username) throws SQLException {
+        sessionManager.beginSession();
+
+        try (Connection connection = sessionManager.getCurrentSession();
+             PreparedStatement pst = connection.prepareStatement(SQLTask.INSERT_TASK_FOR_USER.QUERY, Statement.RETURN_GENERATED_KEYS)) {
+            pst.setString(1, task.getTitle());
+            pst.setString(2, task.getDescription());
+            pst.setDate(3, Date.valueOf(task.getDeadline_date()));
+            pst.setBoolean(4, task.isDone());
+            pst.setString(5, (String) username);
+
+            pst.executeUpdate();
+            try (ResultSet rs = pst.getGeneratedKeys()) {
+                rs.next();
+                long id = rs.getLong(1);
+                sessionManager.commitSession();
+
+                return id;
+            }
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
+            throw ex;
+        }
+
+    }
+
+    @Override
     public boolean update(Task model) {
         return false;
     }
@@ -89,6 +118,31 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
     public boolean delete(Task model) {
         return false;
     }
+
+    @Override
+    public boolean deleteEntityByID(Long task_id) throws SQLException {
+        boolean result;
+
+        sessionManager.beginSession();
+        try (Connection connection = sessionManager.getCurrentSession();
+             PreparedStatement pst = connection.prepareStatement(SQLTask.DELETE_TASK_BY_ID.QUERY)) {
+            pst.setLong(1, task_id);
+
+            int rows = pst.executeUpdate();
+            result = rows == 1;
+
+            sessionManager.commitSession();
+
+
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
+            sessionManager.rollbackSession();
+            throw ex;
+        }
+
+        return result;
+    }
+
 
     @Override
     public List<Task> findAllByPrimaryKey(Object pkey) throws SQLException {
@@ -163,10 +217,19 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
                 " INNER JOIN tasks_users on users.id = tasks_users.user_id" +
                 " INNER JOIN tasks on tasks.id = tasks_users.task_id" +
                 " WHERE users.username = (?)"),
-        GET_TASK_BY_ID("SELECT * from tasks WHERE id=(?)"),
+        GET_TASK_BY_ID("select tasks.id, tasks.title, tasks.description, tasks.deadline_date, tasks.done, users.name, users.surname" +
+                " from tasks INNER JOIN tasks_users ON tasks.id = tasks_users.task_id" +
+                " INNER JOIN users ON users.id = tasks_users.user_id" +
+                " WHERE tasks.id = (?)"),
         GET_ALL_TASKS_WITH_EXECUTORS("select tasks.title, tasks.description,tasks.deadline_date, tasks.done, users.name, users.surname" +
                 " from tasks INNER JOIN tasks_users ON tasks.id = tasks_users.task_id" +
-                " INNER JOIN users ON users.id = tasks_users.user_id");
+                " INNER JOIN users ON users.id = tasks_users.user_id"),
+        INSERT_TASK_FOR_USER("with task_insert as (INSERT INTO tasks (title, description, deadline_date, done) " +
+                "VALUES ((?), (?),(?), (?)) RETURNING id) " +
+                "INSERT into tasks_users(task_id,user_id) " +
+                "VALUES " +
+                "( (SELECT id from task_insert), (SELECT users.id from users where username=(?)))"),
+        DELETE_TASK_BY_ID("DELETE from tasks where id=(?)");
 
         String QUERY;
 

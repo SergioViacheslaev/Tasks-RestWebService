@@ -1,21 +1,21 @@
 package ru.home.taskswebservice.servlets;
 
 
-import lombok.SneakyThrows;
 import ru.home.taskswebservice.dao.TaskDaoJDBC;
+import ru.home.taskswebservice.dao.jdbc.sessionmanager.SessionManagerException;
 import ru.home.taskswebservice.model.Task;
-import ru.home.taskswebservice.util.TimeUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class AddTaskServlet extends HttpServlet {
-    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private TaskDaoJDBC taskDao;
 
     @Override
@@ -30,26 +30,46 @@ public class AddTaskServlet extends HttpServlet {
         }
     }
 
-    @SneakyThrows
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
+        resp.setContentType("application/json; charset=UTF-8");
 
         final String title = req.getParameter("title");
         final String description = req.getParameter("description");
-        final LocalDate deadline_date = TimeUtils.convertToLocalDateViaDate(sdf.parse(req.getParameter("deadline_date")));
-        final boolean done = Boolean.parseBoolean(req.getParameter("done"));
+        final LocalDate deadline_date = LocalDate.parse(req.getParameter("deadline_date"), formatter);
+        final boolean doneCheckbox = req.getParameter("done") != null;
+        String executorUsername = req.getParameter("username");
+
+        if (executorUsername.isEmpty()) {
+            executorUsername = (String) req.getSession(false).getAttribute("username");
+        }
 
         final Task task = new Task();
         task.setTitle(title);
         task.setDescription(description);
         task.setDeadline_date(deadline_date);
-        task.setDone(done);
+        task.setDone(doneCheckbox);
+        try {
+            taskDao.insertRecordMultipleTables(task, executorUsername);
+            resp.sendRedirect(req.getContextPath() + "/tasksmenu");
+        } catch (SQLException | SessionManagerException e) {
+            if (e.getMessage().contains("\"user_id\" нарушает ограничение NOT NULL")) {
+                resp.setContentType("application/json; charset=UTF-8");
+                resp.getWriter().write("Произошла ошибка, задача не добавлена:\nИсполнитель с таким username не найден в БД\n");
+                return;
+            }
 
-        taskDao.insertRecord(task);
-        resp.sendRedirect(req.getContextPath() + "/tasksmenu");
+            resp.setContentType("application/json; charset=UTF-8");
+            resp.getWriter().write("Произошла ошибка, задача не добавлена\n" + e.getMessage());
+        }
+
+
     }
 
 
 }
+
+
+

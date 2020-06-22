@@ -69,12 +69,22 @@ public class UserDaoJDBC implements DAO<User, String> {
     }
 
     @Override
+    public boolean deleteEntityByID(String s) {
+        return false;
+    }
+
+    @Override
     public List<User> findAllByPrimaryKey(Object pkey) throws SQLException {
         return null;
     }
 
     @Override
     public List<User> findAll() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public long insertRecordMultipleTables(User model, Object arg) throws SQLException {
         throw new UnsupportedOperationException();
     }
 

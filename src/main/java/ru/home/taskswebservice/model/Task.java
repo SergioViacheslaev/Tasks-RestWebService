@@ -19,7 +19,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonPropertyOrder({"id", "title", "description", "deadline_date", "done"})
+@JsonPropertyOrder({"id", "title", "description", "deadline_date", "executor", "done"})
 public class Task {
     private int id;
     private String title;
