@@ -18,9 +18,12 @@ import java.sql.SQLException;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DataSourceHikariPostgreSQL {
-    final static String USER = "postgres";
-    final static String PASSWORD = "postgres";
-    final static String URL = "jdbc:postgresql://localhost:5432/restserviceDB";
+//    final static String USER = "postgres";
+    final static String USER = "glgdsyiyuuwrrq";
+//    final static String PASSWORD = "postgres";
+    final static String PASSWORD = "eb90430eb78860c243b23de70c9eb435271a6c3934327a1950d45aa4ca64d787";
+//    final static String URL = "jdbc:postgresql://localhost:5432/restserviceDB";
+    final static String URL = "jdbc:postgresql://ec2-54-75-246-118.eu-west-1.compute.amazonaws.com:5432/d6kgmr0los7kla?user=glgdsyiyuuwrrq&password=eb90430eb78860c243b23de70c9eb435271a6c3934327a1950d45aa4ca64d787";
 
     private static final HikariConfig config = new HikariConfig();
     private static final HikariDataSource dataSource;
@@ -30,8 +33,9 @@ public class DataSourceHikariPostgreSQL {
         config.setUsername(USER);
         config.setPassword(PASSWORD);
 
+
         config.setDriverClassName(org.postgresql.Driver.class.getName());
-        config.setConnectionTimeout(3000); //ms
+        config.setConnectionTimeout(15000); //ms
         config.setIdleTimeout(60000); //ms
         config.setMaxLifetime(600000);//ms
         config.setAutoCommit(false);
