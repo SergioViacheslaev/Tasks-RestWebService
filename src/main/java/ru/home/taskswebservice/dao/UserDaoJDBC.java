@@ -19,6 +19,7 @@ import java.util.Optional;
 @Slf4j
 public class UserDaoJDBC implements DAO<User, String> {
 
+
     private final SessionManager sessionManager;
 
     public UserDaoJDBC(final SessionManager sessionManager) {
@@ -64,11 +65,6 @@ public class UserDaoJDBC implements DAO<User, String> {
     }
 
     @Override
-    public boolean delete(User model) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public boolean deleteEntityByID(String s) {
         return false;
     }
@@ -86,6 +82,11 @@ public class UserDaoJDBC implements DAO<User, String> {
     @Override
     public long insertRecordMultipleTables(User model, Object arg) throws SQLException {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int updateTasksUsersTable(User model, Object arg) throws SQLException {
+        return 0;
     }
 
     /**

@@ -28,6 +28,10 @@
             <input type="number" hidden name="id" value="${task.id}"/>
             <input type="submit" name="delete" value="Удалить"/>
         </form>
+        <form method="get" action="<c:url value='/update_executor'/>">
+            <input type="number" hidden name="id" value="${task.id}"/>
+            <input type="submit" name="change_executor" value="Сменить исполнителя"/>
+        </form>
 
     </ul>
     <hr/>

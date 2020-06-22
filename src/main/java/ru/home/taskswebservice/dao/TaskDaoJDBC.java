@@ -139,9 +139,30 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
     }
 
     @Override
-    public boolean delete(Task model) {
-        return false;
+    public int updateTasksUsersTable(Task task, Object arg) throws SQLException {
+        int rowsUpdated;
+        String executor_username = (String) arg;
+
+        sessionManager.beginSession();
+        try (Connection connection = sessionManager.getCurrentSession();
+             PreparedStatement pst = connection.prepareStatement(SQLTask.UPDATE_TASK_EXECUTOR.QUERY)) {
+            pst.setString(1, executor_username);
+            pst.setLong(2, task.getId());
+
+            rowsUpdated = pst.executeUpdate();
+
+            sessionManager.commitSession();
+
+
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
+            throw ex;
+        }
+
+        return rowsUpdated;
     }
+
+
 
     @Override
     public boolean deleteEntityByID(Long task_id) throws SQLException {
@@ -254,7 +275,10 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
                 "VALUES " +
                 "( (SELECT id from task_insert), (SELECT users.id from users where username=(?)))"),
         DELETE_TASK_BY_ID("DELETE from tasks where id=(?)"),
-        UPDATE_TASK_BY_ID("UPDATE tasks set title=(?), description=(?), deadline_date=(?), done=(?) where id=(?)");
+        UPDATE_TASK_BY_ID("UPDATE tasks set title=(?), description=(?), deadline_date=(?), done=(?) where id=(?)"),
+        UPDATE_TASK_EXECUTOR("UPDATE tasks_users" +
+                " set user_id=(select users.id from users where users.username =(?) )" +
+                " where task_id=(?)");
 
         String QUERY;
 

@@ -9,11 +9,12 @@ public interface DAO<Entity, Id> {
 
     long insertRecordMultipleTables(Entity model, Object arg) throws SQLException;
 
+    int updateTasksUsersTable(Entity model, Object arg) throws SQLException;
+
     Optional<Entity> findById(Id id) throws SQLException;
 
     boolean update(Entity model) throws SQLException;
 
-    boolean delete(Entity model);
 
     boolean deleteEntityByID(Id id) throws SQLException;
 
