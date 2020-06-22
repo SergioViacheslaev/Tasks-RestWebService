@@ -110,8 +110,32 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
     }
 
     @Override
-    public boolean update(Task model) {
-        return false;
+    public boolean update(Task task) throws SQLException {
+        boolean result;
+        sessionManager.beginSession();
+
+        try (Connection connection = sessionManager.getCurrentSession();
+             PreparedStatement pst = connection.prepareStatement(SQLTask.UPDATE_TASK_BY_ID.QUERY)) {
+            pst.setString(1, task.getTitle());
+            pst.setString(2, task.getDescription());
+            pst.setDate(3, Date.valueOf(task.getDeadline_date()));
+            pst.setBoolean(4, task.isDone());
+            pst.setInt(5, task.getId());
+
+
+            int rows = pst.executeUpdate();
+            result = rows == 1;
+
+            sessionManager.commitSession();
+
+
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
+            sessionManager.rollbackSession();
+            throw ex;
+        }
+
+        return result;
     }
 
     @Override
@@ -229,7 +253,8 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
                 "INSERT into tasks_users(task_id,user_id) " +
                 "VALUES " +
                 "( (SELECT id from task_insert), (SELECT users.id from users where username=(?)))"),
-        DELETE_TASK_BY_ID("DELETE from tasks where id=(?)");
+        DELETE_TASK_BY_ID("DELETE from tasks where id=(?)"),
+        UPDATE_TASK_BY_ID("UPDATE tasks set title=(?), description=(?), deadline_date=(?), done=(?) where id=(?)");
 
         String QUERY;
 

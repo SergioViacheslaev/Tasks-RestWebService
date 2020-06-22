@@ -11,7 +11,7 @@ public interface DAO<Entity, Id> {
 
     Optional<Entity> findById(Id id) throws SQLException;
 
-    boolean update(Entity model);
+    boolean update(Entity model) throws SQLException;
 
     boolean delete(Entity model);
 
