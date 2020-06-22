@@ -11,8 +11,7 @@
 </head>
 <body>
 
-<h2>Все задачи</h2><br/>
-
+<h2>Мои задачи</h2>
 
 <c:forEach var="task" items="${requestScope.tasks}">
     <ul>
@@ -35,6 +34,9 @@
 
 </c:forEach>
 
+<a href="<c:url value="/showalltasks"/>">
+    <img src="<%=request.getContextPath()%>/images/showAllTasks.png" alt="Logo" width="120" height="60"></a>
+</a>
 
 <h2>Создание новой задачи</h2>
 <form method="post" action="<c:url value='/add_task'/>">

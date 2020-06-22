@@ -14,4 +14,6 @@ public interface DAO<Entity, Id> {
     boolean delete(Entity model);
 
     List<Entity> findAllByPrimaryKey(Object pkey) throws SQLException;
+
+    List<Entity> findAll() throws SQLException;
 }

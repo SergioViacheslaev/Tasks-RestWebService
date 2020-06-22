@@ -73,6 +73,11 @@ public class UserDaoJDBC implements DAO<User, String> {
         return null;
     }
 
+    @Override
+    public List<User> findAll() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * SQL queries for users table.
      */

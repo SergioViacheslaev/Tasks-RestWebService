@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import ru.home.taskswebservice.dao.jdbc.sessionmanager.SessionManager;
 import ru.home.taskswebservice.model.Task;
+import ru.home.taskswebservice.model.User;
 import ru.home.taskswebservice.util.TimeUtils;
 
 import java.sql.*;
@@ -120,6 +121,37 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
 
     }
 
+    @Override
+    public List<Task> findAll() throws SQLException {
+        List<Task> userTasks = new ArrayList<>();
+
+        sessionManager.beginSession();
+        try (Connection connection = sessionManager.getCurrentSession();
+             PreparedStatement pst = connection.prepareStatement(SQLTask.GET_ALL_TASKS_WITH_EXECUTORS.QUERY)) {
+
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    Task task = new Task();
+                    task.setTitle(rs.getString("title"));
+                    task.setDescription(rs.getString("description"));
+                    task.setDeadline_date(TimeUtils.convertToLocalDateViaSqlDate(rs.getDate("deadline_date")));
+                    task.setDone(rs.getBoolean("done"));
+                    User user = new User();
+                    user.setName(rs.getString("name"));
+                    user.setSurname(rs.getString("surname"));
+                    task.setExecutor(user);
+                    userTasks.add(task);
+                }
+            }
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
+            sessionManager.rollbackSession();
+            throw ex;
+        }
+
+        return userTasks;
+    }
+
     /**
      * SQL queries for users table.
      */
@@ -131,7 +163,10 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
                 " INNER JOIN tasks_users on users.id = tasks_users.user_id" +
                 " INNER JOIN tasks on tasks.id = tasks_users.task_id" +
                 " WHERE users.username = (?)"),
-        GET_TASK_BY_ID("SELECT * from tasks WHERE id=(?)");
+        GET_TASK_BY_ID("SELECT * from tasks WHERE id=(?)"),
+        GET_ALL_TASKS_WITH_EXECUTORS("select tasks.title, tasks.description,tasks.deadline_date, tasks.done, users.name, users.surname" +
+                " from tasks INNER JOIN tasks_users ON tasks.id = tasks_users.task_id" +
+                " INNER JOIN users ON users.id = tasks_users.user_id");
 
         String QUERY;
 

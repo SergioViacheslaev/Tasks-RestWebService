@@ -28,4 +28,5 @@ public class Task {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate deadline_date;
     private boolean done;
+    private User executor;
 }
