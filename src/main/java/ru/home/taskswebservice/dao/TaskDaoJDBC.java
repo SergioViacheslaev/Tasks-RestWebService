@@ -231,6 +231,7 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
             try (ResultSet rs = pst.executeQuery()) {
                 while (rs.next()) {
                     Task task = new Task();
+                    task.setId(Integer.parseInt(rs.getString("id")));
                     task.setTitle(rs.getString("title"));
                     task.setDescription(rs.getString("description"));
                     task.setDeadline_date(TimeUtils.convertToLocalDateViaSqlDate(rs.getDate("deadline_date")));
@@ -266,7 +267,7 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
                 " from tasks INNER JOIN tasks_users ON tasks.id = tasks_users.task_id" +
                 " INNER JOIN users ON users.id = tasks_users.user_id" +
                 " WHERE tasks.id = (?)"),
-        GET_ALL_TASKS_WITH_EXECUTORS("select tasks.title, tasks.description,tasks.deadline_date, tasks.done, users.name, users.surname" +
+        GET_ALL_TASKS_WITH_EXECUTORS("select tasks.id, tasks.title, tasks.description,tasks.deadline_date, tasks.done, users.name, users.surname" +
                 " from tasks INNER JOIN tasks_users ON tasks.id = tasks_users.task_id" +
                 " INNER JOIN users ON users.id = tasks_users.user_id"),
         INSERT_TASK_FOR_USER("with task_insert as (INSERT INTO tasks (title, description, deadline_date, done) " +

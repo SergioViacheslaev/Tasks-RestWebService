@@ -15,6 +15,7 @@
 
 <c:forEach var="task" items="${requestScope.tasks}">
     <ul>
+        ID: <c:out value="${task.id}"/> <br>
         Название: <c:out value="${task.title}"/> <br>
         Описание: <c:out value="${task.description}"/> <br>
         Срок выполнения: <c:out value="${task.deadline_date}"/> <br>
