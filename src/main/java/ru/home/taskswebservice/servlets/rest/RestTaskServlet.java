@@ -1,4 +1,4 @@
-package ru.home.taskswebservice.servlets;
+package ru.home.taskswebservice.servlets.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
