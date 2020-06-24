@@ -17,11 +17,11 @@ import java.io.IOException;
 
 @WebServlet(urlPatterns = "/login")
 public class LoginServlet extends HttpServlet {
-    private Authentication authService;
+    private Authentication authenticationService;
 
     @Override
     public void init() throws ServletException {
-        this.authService = (Authentication) getServletContext().getAttribute("authService");
+        this.authenticationService = (Authentication) getServletContext().getAttribute("userAuthService");
     }
 
     @Override
@@ -31,12 +31,12 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String username = request.getParameter("username");
+        String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        if (authService.isAuthenticated(username, password)) {
+        if (authenticationService.isAuthenticated(email, password)) {
             final HttpSession userSession = request.getSession();
-            userSession.setAttribute("username", username);
+            userSession.setAttribute("email", email);
             response.sendRedirect("/tasksmenu");
         } else {
             response.setCharacterEncoding("UTF-8");

@@ -16,13 +16,13 @@ import java.util.Optional;
 @Setter
 @AllArgsConstructor
 @Slf4j
-public class AuthenticationService implements Authentication {
+public class UserAuthenticationService implements Authentication {
     private UserDaoJDBC userDaoJDBC;
 
     @Override
     public boolean isAuthenticated(String username, String inputPassword) {
         try {
-            final Optional<User> optionalUser = userDaoJDBC.findById(username);
+            final Optional<User> optionalUser = userDaoJDBC.findByEmail(username);
             if (optionalUser.isEmpty()) return false;
 
             final User user = optionalUser.get();

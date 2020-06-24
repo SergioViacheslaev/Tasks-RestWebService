@@ -27,7 +27,7 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
         sessionManager.beginSession();
 
         try (Connection connection = sessionManager.getCurrentSession();
-             PreparedStatement pst = connection.prepareStatement(SQLTask.INSERT.QUERY, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement pst = connection.prepareStatement(SQLTask.INSERT_TASK.QUERY, Statement.RETURN_GENERATED_KEYS)) {
             pst.setString(1, task.getTitle());
             pst.setString(2, task.getDescription());
             pst.setDate(3, Date.valueOf(task.getDeadline_date()));
@@ -191,13 +191,13 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
 
     @Override
     public List<Task> findAllByPrimaryKey(Object pkey) throws SQLException {
-        String username = (String) pkey;
+        String email = (String) pkey;
         List<Task> userTasks = new ArrayList<>();
 
         sessionManager.beginSession();
         try (Connection connection = sessionManager.getCurrentSession();
-             PreparedStatement pst = connection.prepareStatement(SQLTask.GET_TASKS_BY_USERNAME.QUERY)) {
-            pst.setString(1, username);
+             PreparedStatement pst = connection.prepareStatement(SQLTask.GET_TASKS_BY_EMAIL.QUERY)) {
+            pst.setString(1, email);
 
             try (ResultSet rs = pst.executeQuery()) {
                 while (rs.next()) {
@@ -256,13 +256,13 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
      * SQL queries for users table.
      */
     enum SQLTask {
-        INSERT("INSERT INTO tasks (title, description, deadline_date, done) VALUES ((?), (?),(?), (?))"),
-        GET_TASKS_BY_USERNAME("SELECT tasks.id, tasks.title, tasks.description," +
+        INSERT_TASK("INSERT INTO tasks (title, description, deadline_date, done) VALUES ((?), (?),(?), (?))"),
+        GET_TASKS_BY_EMAIL("SELECT tasks.id, tasks.title, tasks.description," +
                 " tasks.deadline_date, tasks.done" +
                 " from users" +
                 " INNER JOIN tasks_users on users.id = tasks_users.user_id" +
                 " INNER JOIN tasks on tasks.id = tasks_users.task_id" +
-                " WHERE users.username = (?)"),
+                " WHERE users.email = (?)"),
         GET_TASK_BY_ID("select tasks.id, tasks.title, tasks.description, tasks.deadline_date, tasks.done, users.name, users.surname" +
                 " from tasks INNER JOIN tasks_users ON tasks.id = tasks_users.task_id" +
                 " INNER JOIN users ON users.id = tasks_users.user_id" +

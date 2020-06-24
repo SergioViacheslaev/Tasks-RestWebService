@@ -16,4 +16,5 @@ public class User {
     private String password_hash;
     private String name;
     private String surname;
+    private String email;
 }

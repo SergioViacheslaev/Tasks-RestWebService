@@ -18,14 +18,13 @@ import java.sql.SQLException;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DataSourceHikariPostgreSQL {
-//    final static String USER = "postgres";
-    final static String USER = "kfgzgqbrhqpjvd";
-//    final static String PASSWORD = "postgres";
-    final static String PASSWORD = "216be4352e2eb18afb691e0806bfe5567321cd8d01f66bdc59775571c6fb4168";
+    final static String USER = "postgres";
+//    final static String USER = "kfgzgqbrhqpjvd";
+    final static String PASSWORD = "postgres";
+//    final static String PASSWORD = "216be4352e2eb18afb691e0806bfe5567321cd8d01f66bdc59775571c6fb4168";
 
-//    final static String URL = "jdbc:postgresql://localhost:5432/restserviceDB";
-    final static String URL = "jdbc:postgresql://ec2-54-246-115-40.eu-west-1.compute.amazonaws.com:5432/dfbd0helbmkatr?user=kfgzgqbrhqpjvd&password=216be4352e2eb18afb691e0806bfe5567321cd8d01f66bdc59775571c6fb4168";
-//    final static String URL = "jdbc:postgresql://glgdsyiyuuwrrq:eb90430eb78860c243b23de70c9eb435271a6c3934327a1950d45aa4ca64d787@ec2-54-75-246-118.eu-west-1.compute.amazonaws.com:5432/d6kgmr0los7kla";
+    final static String URL = "jdbc:postgresql://localhost:5432/restserviceDB";
+//    final static String URL = "jdbc:postgresql://ec2-54-246-115-40.eu-west-1.compute.amazonaws.com:5432/dfbd0helbmkatr?user=kfgzgqbrhqpjvd&password=216be4352e2eb18afb691e0806bfe5567321cd8d01f66bdc59775571c6fb4168";
 
     private static final HikariConfig config = new HikariConfig();
     private static final HikariDataSource dataSource;
