@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class UpdateTaskServlet extends HttpServlet {
+    private static final String TASK_UPDATE_ERROR = "Произошла ошибка, задача не обновлена\n";
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private TaskDaoJDBC taskDao;
 
@@ -46,7 +47,7 @@ public class UpdateTaskServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/tasksmenu");
         } catch (SQLException e) {
             resp.setContentType("application/json; charset=UTF-8");
-            resp.getWriter().write("Произошла ошибка, задача не обновлена\n" + e.getMessage());
+            resp.getWriter().write(TASK_UPDATE_ERROR + e.getMessage());
         }
 
 

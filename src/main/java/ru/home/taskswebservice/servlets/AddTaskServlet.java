@@ -15,6 +15,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class AddTaskServlet extends HttpServlet {
+    private static final String TASK_ADD_ERROR = "Произошла ошибка, задача не добавлена !\n";
+    private static final String TASK_EXECUTOR_NOT_FOUND = "Исполнитель с таким username не найден в БД\n";
+
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private TaskDaoJDBC taskDao;
 
@@ -55,12 +58,12 @@ public class AddTaskServlet extends HttpServlet {
         } catch (SQLException | SessionManagerException e) {
             if (e.getMessage().contains("\"user_id\" нарушает ограничение NOT NULL")) {
                 resp.setContentType("application/json; charset=UTF-8");
-                resp.getWriter().write("Произошла ошибка, задача не добавлена:\nИсполнитель с таким username не найден в БД\n");
+                resp.getWriter().write(TASK_ADD_ERROR + TASK_EXECUTOR_NOT_FOUND);
                 return;
             }
 
             resp.setContentType("application/json; charset=UTF-8");
-            resp.getWriter().write("Произошла ошибка, задача не добавлена\n" + e.getMessage());
+            resp.getWriter().write(TASK_ADD_ERROR + e.getMessage());
         }
     }
 

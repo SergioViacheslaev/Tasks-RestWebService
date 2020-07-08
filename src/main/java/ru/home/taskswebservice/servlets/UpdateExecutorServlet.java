@@ -18,6 +18,7 @@ import java.time.format.DateTimeFormatter;
  */
 @WebServlet("/update_executor")
 public class UpdateExecutorServlet extends HttpServlet {
+    private static final String TASK_EXECUTOR_UPDATE_ERROR = "Произошла ошибка, исполнитель не обновлен\n";
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private TaskDaoJDBC taskDao;
 
@@ -45,7 +46,7 @@ public class UpdateExecutorServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/tasksmenu");
         } catch (SQLException e) {
             resp.setContentType("application/json; charset=UTF-8");
-            resp.getWriter().write("Произошла ошибка, исполнитель не обновлен\n" + e.getMessage());
+            resp.getWriter().write(TASK_EXECUTOR_UPDATE_ERROR + e.getMessage());
         }
 
 
