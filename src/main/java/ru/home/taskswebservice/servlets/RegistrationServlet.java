@@ -52,6 +52,5 @@ public class RegistrationServlet extends HttpServlet {
             resp.getWriter().write("Пользователь с таким email уже зарегистрирован ");
         }
 
-
     }
 }

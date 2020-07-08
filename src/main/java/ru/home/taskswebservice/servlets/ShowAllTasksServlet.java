@@ -21,12 +21,8 @@ public class ShowAllTasksServlet extends HttpServlet {
     public void init() throws ServletException {
 
         final Object taskDAO = getServletContext().getAttribute("taskDAO");
+        this.taskDao = (TaskDaoJDBC) taskDAO;
 
-        if (!(taskDAO instanceof TaskDaoJDBC)) {
-            throw new IllegalStateException("Your repo does not initialize!");
-        } else {
-            this.taskDao = (TaskDaoJDBC) taskDAO;
-        }
     }
 
 

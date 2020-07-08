@@ -46,7 +46,5 @@ public class UserRegistrationService implements UserRegistration {
         user.setEmail(email);
 
         return userDaoJDBC.insertUser(user);
-
-
     }
 }

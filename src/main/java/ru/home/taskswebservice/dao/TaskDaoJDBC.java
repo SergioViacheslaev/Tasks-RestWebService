@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Slf4j
 @Getter
-public class TaskDaoJDBC implements DAO<Task, Long> {
+public class TaskDaoJDBC implements TaskDao {
     private final SessionManager sessionManager;
 
     public TaskDaoJDBC(final SessionManager sessionManager) {
@@ -23,7 +23,7 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
 
 
     @Override
-    public long insertRecord(final Task task) throws SQLException {
+    public long insertTask(final Task task) throws SQLException {
         sessionManager.beginSession();
 
         try (Connection connection = sessionManager.getCurrentSession();
@@ -83,7 +83,7 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
     }
 
     @Override
-    public long insertRecordMultipleTables(Task task, Object username) throws SQLException {
+    public long insertTaskForUser(Task task, String executor_username) throws SQLException {
         sessionManager.beginSession();
 
         try (Connection connection = sessionManager.getCurrentSession();
@@ -92,7 +92,7 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
             pst.setString(2, task.getDescription());
             pst.setDate(3, Date.valueOf(task.getDeadline_date()));
             pst.setBoolean(4, task.isDone());
-            pst.setString(5, (String) username);
+            pst.setString(5, executor_username);
 
             pst.executeUpdate();
             try (ResultSet rs = pst.getGeneratedKeys()) {
@@ -139,9 +139,9 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
     }
 
     @Override
-    public int updateTasksUsersTable(Task task, Object arg) throws SQLException {
+    public int updateTaskExecutor(Task task, String executor_username) throws SQLException {
         int rowsUpdated;
-        String executor_username = (String) arg;
+
 
         sessionManager.beginSession();
         try (Connection connection = sessionManager.getCurrentSession();
@@ -163,9 +163,8 @@ public class TaskDaoJDBC implements DAO<Task, Long> {
     }
 
 
-
     @Override
-    public boolean deleteEntityByID(Long task_id) throws SQLException {
+    public boolean deleteTaskById(Long task_id) throws SQLException {
         boolean result;
 
         sessionManager.beginSession();

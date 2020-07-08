@@ -8,7 +8,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 @WebServlet(urlPatterns = "/tasksmenu")
 public class GetTasksMenuServlet extends HttpServlet {
@@ -19,18 +18,14 @@ public class GetTasksMenuServlet extends HttpServlet {
     public void init() throws ServletException {
 
         final Object taskDAO = getServletContext().getAttribute("taskDAO");
+        this.taskDao = (TaskDaoJDBC) taskDAO;
 
-        if (!(taskDAO instanceof TaskDaoJDBC)) {
-            throw new IllegalStateException("Your repo does not initialize!");
-        } else {
-            this.taskDao = (TaskDaoJDBC) taskDAO;
-        }
     }
 
     @SneakyThrows
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws ServletException {
         String email = (String) req.getSession(false).getAttribute("email");
         req.setAttribute("tasks", taskDao.findAllByPrimaryKey(email));
         req.getRequestDispatcher("/WEB-INF/view/tasksMenuPage.jsp").forward(req, resp);

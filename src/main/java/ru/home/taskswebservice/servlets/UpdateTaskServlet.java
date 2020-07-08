@@ -21,7 +21,6 @@ public class UpdateTaskServlet extends HttpServlet {
     public void init() throws ServletException {
         final Object taskDAO = getServletContext().getAttribute("taskDAO");
         this.taskDao = (TaskDaoJDBC) taskDAO;
-
     }
 
     @Override
@@ -59,11 +58,9 @@ public class UpdateTaskServlet extends HttpServlet {
             throws ServletException, IOException {
 
         final String id = req.getParameter("id");
-
         final Task task = taskDao.findById(Long.parseLong(id)).get();
 
         req.setAttribute("task", task);
-
         req.getRequestDispatcher("/WEB-INF/view/updateTaskPage.jsp")
                 .forward(req, resp);
     }

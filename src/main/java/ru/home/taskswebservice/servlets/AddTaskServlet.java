@@ -22,12 +22,8 @@ public class AddTaskServlet extends HttpServlet {
     public void init() throws ServletException {
 
         final Object taskDAO = getServletContext().getAttribute("taskDAO");
+        this.taskDao = (TaskDaoJDBC) taskDAO;
 
-        if (!(taskDAO instanceof TaskDaoJDBC)) {
-            throw new IllegalStateException("Your repo does not initialize!");
-        } else {
-            this.taskDao = (TaskDaoJDBC) taskDAO;
-        }
     }
 
     @Override
@@ -51,9 +47,11 @@ public class AddTaskServlet extends HttpServlet {
         task.setDescription(description);
         task.setDeadline_date(deadline_date);
         task.setDone(doneCheckbox);
+
         try {
-            taskDao.insertRecordMultipleTables(task, executorUsername);
+            taskDao.insertTaskForUser(task, executorUsername);
             resp.sendRedirect(req.getContextPath() + "/tasksmenu");
+
         } catch (SQLException | SessionManagerException e) {
             if (e.getMessage().contains("\"user_id\" нарушает ограничение NOT NULL")) {
                 resp.setContentType("application/json; charset=UTF-8");
@@ -64,10 +62,7 @@ public class AddTaskServlet extends HttpServlet {
             resp.setContentType("application/json; charset=UTF-8");
             resp.getWriter().write("Произошла ошибка, задача не добавлена\n" + e.getMessage());
         }
-
-
     }
-
 
 }
 

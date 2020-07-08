@@ -26,13 +26,11 @@ public class UserAuthenticationService implements Authentication {
             if (optionalUser.isEmpty()) return false;
 
             final User user = optionalUser.get();
-            log.info("User from DB: {}", user);
 
             return user.getPassword_hash().equals(DigestUtils.md5Hex(inputPassword));
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
-
     }
 }

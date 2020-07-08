@@ -41,7 +41,7 @@ public class UpdateExecutorServlet extends HttpServlet {
 
 
         try {
-            taskDao.updateTasksUsersTable(task, executor_username);
+            taskDao.updateTaskExecutor(task, executor_username);
             resp.sendRedirect(req.getContextPath() + "/tasksmenu");
         } catch (SQLException e) {
             resp.setContentType("application/json; charset=UTF-8");
@@ -61,7 +61,6 @@ public class UpdateExecutorServlet extends HttpServlet {
         final Task task = taskDao.findById(Long.parseLong(id)).get();
 
         req.setAttribute("task", task);
-
         req.getRequestDispatcher("/WEB-INF/view/updateTaskExecutor.jsp")
                 .forward(req, resp);
     }

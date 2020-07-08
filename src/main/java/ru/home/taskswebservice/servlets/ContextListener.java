@@ -34,7 +34,6 @@ public class ContextListener implements ServletContextListener {
         final ServletContext servletContext =
                 servletContextEvent.getServletContext();
 
-
         DataSource dataSource = DataSourceHikariPostgreSQL.getHikariDataSource();
         SessionManager sessionManager = new SessionManagerJdbc(dataSource);
         UserDaoJDBC userDaoJDBC = new UserDaoJDBC(sessionManager);
@@ -42,12 +41,9 @@ public class ContextListener implements ServletContextListener {
         authenticationService = new UserAuthenticationService(userDaoJDBC);
         userRegistrationService = new UserRegistrationService(userDaoJDBC);
 
-
         servletContext.setAttribute("userAuthService", authenticationService);
         servletContext.setAttribute("userRegistrationService", userRegistrationService);
         servletContext.setAttribute("taskDAO", taskDaoJDBC);
-
-
     }
 
     @Override

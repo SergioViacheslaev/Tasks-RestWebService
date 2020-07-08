@@ -3,7 +3,6 @@ package ru.home.taskswebservice.servlets.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import ru.home.taskswebservice.model.Task;
-import ru.home.taskswebservice.util.TaskUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -72,20 +71,17 @@ public class RestTaskServlet extends HttpServlet {
 
         req.setCharacterEncoding("UTF-8");
 
-        if (TaskUtils.requestIsValid(req)) {
+        final String title = req.getParameter("title");
+        final String description = req.getParameter("description");
 
-            final String title = req.getParameter("title");
-            final String description = req.getParameter("description");
+        final Task task = new Task();
+        final int id = this.idCounter.getAndIncrement();
+        task.setId(id);
+        task.setTitle(title);
+        task.setDescription(description);
 
-            final Task task = new Task();
-            final int id = this.idCounter.getAndIncrement();
-            task.setId(id);
-            task.setTitle(title);
-            task.setDescription(description);
+        tasks.put(id, task);
 
-            tasks.put(id, task);
-
-        }
 
         resp.setStatus(201);
 
