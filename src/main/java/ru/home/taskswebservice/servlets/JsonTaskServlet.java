@@ -1,4 +1,4 @@
-package ru.home.taskswebservice.servlets.rest;
+package ru.home.taskswebservice.servlets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ru.home.taskswebservice.dao.TaskDaoJDBC;
@@ -20,13 +20,7 @@ public class JsonTaskServlet extends HttpServlet {
     public void init() throws ServletException {
 
         final Object taskDAO = getServletContext().getAttribute("taskDAO");
-
-        if (!(taskDAO instanceof TaskDaoJDBC)) {
-            throw new IllegalStateException("Your repo does not initialize!");
-        } else {
-            this.taskDao = (TaskDaoJDBC) taskDAO;
-        }
-
+        this.taskDao = (TaskDaoJDBC) taskDAO;
 
     }
 

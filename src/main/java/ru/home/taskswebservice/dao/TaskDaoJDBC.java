@@ -3,6 +3,7 @@ package ru.home.taskswebservice.dao;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import ru.home.taskswebservice.dao.jdbc.sessionmanager.SessionManager;
+import ru.home.taskswebservice.model.Goal;
 import ru.home.taskswebservice.model.Task;
 import ru.home.taskswebservice.model.User;
 import ru.home.taskswebservice.util.TimeUtils;
@@ -70,6 +71,16 @@ public class TaskDaoJDBC implements TaskDao {
                     user.setName(rs.getString("name"));
                     user.setSurname(rs.getString("surname"));
                     task.setExecutor(user);
+
+                    String goalId = rs.getString("goal_id");
+                    if (goalId != null) {
+                        Goal goal = new Goal();
+                        goal.setId(Integer.parseInt(goalId));
+                        goal.setName(rs.getString("goal_name"));
+                        goal.setDescription(rs.getString("goal_description"));
+                        task.setGoal(goal);
+                    }
+
                 }
             }
         } catch (SQLException ex) {
@@ -262,9 +273,12 @@ public class TaskDaoJDBC implements TaskDao {
                 " INNER JOIN tasks_users on users.id = tasks_users.user_id" +
                 " INNER JOIN tasks on tasks.id = tasks_users.task_id" +
                 " WHERE users.email = (?)"),
-        GET_TASK_BY_ID("select tasks.id, tasks.title, tasks.description, tasks.deadline_date, tasks.done, users.name, users.surname" +
+        GET_TASK_BY_ID("select tasks.id, tasks.title, tasks.description, tasks.deadline_date, tasks.done, users.name, users.surname," +
+                "goals.id AS goal_id, goals.name AS goal_name, goals.description AS goal_description" +
                 " from tasks INNER JOIN tasks_users ON tasks.id = tasks_users.task_id" +
                 " INNER JOIN users ON users.id = tasks_users.user_id" +
+                " LEFT OUTER JOIN tasks_goals ON tasks.id = tasks_goals.task_id" +
+                " LEFT OUTER JOIN goals ON goals.id = tasks_goals.goal_id" +
                 " WHERE tasks.id = (?)"),
         GET_ALL_TASKS_WITH_EXECUTORS("select tasks.id, tasks.title, tasks.description,tasks.deadline_date, tasks.done, users.name, users.surname" +
                 " from tasks INNER JOIN tasks_users ON tasks.id = tasks_users.task_id" +

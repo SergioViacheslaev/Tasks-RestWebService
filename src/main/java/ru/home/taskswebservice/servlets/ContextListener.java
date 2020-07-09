@@ -10,6 +10,8 @@ import ru.home.taskswebservice.service.Authentication;
 import ru.home.taskswebservice.service.UserAuthenticationService;
 import ru.home.taskswebservice.service.UserRegistration;
 import ru.home.taskswebservice.service.UserRegistrationService;
+import ru.home.taskswebservice.service.resthandlers.RestApiGetHandlerService;
+import ru.home.taskswebservice.service.resthandlers.RestApiHandler;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -27,6 +29,7 @@ public class ContextListener implements ServletContextListener {
     private Authentication authenticationService;
     private UserRegistration userRegistrationService;
     private TaskDaoJDBC taskDaoJDBC;
+    private RestApiHandler restApiGetHandlerService;
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -40,10 +43,12 @@ public class ContextListener implements ServletContextListener {
         this.taskDaoJDBC = new TaskDaoJDBC(sessionManager);
         authenticationService = new UserAuthenticationService(userDaoJDBC);
         userRegistrationService = new UserRegistrationService(userDaoJDBC);
+        restApiGetHandlerService = new RestApiGetHandlerService(taskDaoJDBC);
 
         servletContext.setAttribute("userAuthService", authenticationService);
         servletContext.setAttribute("userRegistrationService", userRegistrationService);
         servletContext.setAttribute("taskDAO", taskDaoJDBC);
+        servletContext.setAttribute("restApiGetHandlerService", restApiGetHandlerService);
     }
 
     @Override

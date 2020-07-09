@@ -22,7 +22,8 @@ public class AuthenticationFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) response;
 
         String path = req.getRequestURI().substring(req.getContextPath().length());
-        if (path.startsWith("/login") || path.startsWith("/showDeveloperInfo") || path.startsWith("/registration") || path.startsWith("/images")) {
+        if (path.startsWith("/login") || path.startsWith("/showDeveloperInfo") ||
+                path.startsWith("/registration") || path.startsWith("/images") || path.startsWith("/rest")) {
             filterChain.doFilter(request, response);
             return;
         }

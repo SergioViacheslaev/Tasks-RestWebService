@@ -1,8 +1,10 @@
 package ru.home.taskswebservice.servlets.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
-import ru.home.taskswebservice.model.Task;
+import ru.home.taskswebservice.dao.TaskDaoJDBC;
+import ru.home.taskswebservice.service.resthandlers.RestApiGetHandlerService;
+import ru.home.taskswebservice.service.resthandlers.RestApiHandler;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,35 +13,23 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.sql.SQLException;
 
 /**
  * @author Sergei Viacheslaev
  */
 @Slf4j
-@WebServlet(urlPatterns = "/tasks/*")
+@WebServlet(urlPatterns = "/rest/*")
 public class RestTaskServlet extends HttpServlet {
-
-    private Map<Integer, Task> tasks;
-    private AtomicInteger idCounter;
-
+    private TaskDaoJDBC taskDao;
+    private RestApiHandler restApiGetHandler;
 
     @Override
     public void init() throws ServletException {
-
-        final Object tasks = getServletContext().getAttribute("tasks");
-
-        if (!(tasks instanceof ConcurrentHashMap)) {
-            throw new IllegalStateException("You're repo does not initialize!");
-        } else {
-
-            this.tasks = (ConcurrentHashMap<Integer, Task>) tasks;
-        }
-
-        idCounter = (AtomicInteger) getServletContext().getAttribute("idCounter");
-
+        final Object taskDAO = getServletContext().getAttribute("taskDAO");
+        final Object restApiHandlerService = getServletContext().getAttribute("restApiGetHandlerService");
+        this.taskDao = (TaskDaoJDBC) taskDAO;
+        this.restApiGetHandler = (RestApiGetHandlerService) restApiHandlerService;
 
     }
 
@@ -48,60 +38,39 @@ public class RestTaskServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         log.info("Пришел запрос {} на URI: {}", req.getMethod(), req.getRequestURI());
         String pathInfo = req.getPathInfo();
-        String[] parts = pathInfo.split("/");
-        String param1 = parts[1];
-
-        int taskId = Integer.parseInt(param1);
-
         req.setCharacterEncoding("UTF-8");
+        resp.setContentType("text/HTML; charset=UTF-8");
 
-        final Task task = tasks.get(taskId);
-        final String jsonTask = new ObjectMapper().writeValueAsString(task);
+        try {
+            String user_response = restApiGetHandler.handleRestRequest(pathInfo).orElseThrow(SQLException::new);
+            resp.setContentType("application/json; charset=UTF-8");
+            PrintWriter out = resp.getWriter();
+            out.write(user_response);
 
-        resp.setContentType("application/json; charset=UTF-8");
-        resp.setStatus(200);
-        PrintWriter out = resp.getWriter();
-        out.write(jsonTask);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            PrintWriter out = resp.getWriter();
+            out.write("Не найдено задачи с таким ID");
+            resp.setStatus(404);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
-    //CREATE
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        log.info("Пришел запрос {} на URI: {}", req.getMethod(), req.getRequestURI());
-
-        req.setCharacterEncoding("UTF-8");
-
-        final String title = req.getParameter("title");
-        final String description = req.getParameter("description");
-
-        final Task task = new Task();
-        final int id = this.idCounter.getAndIncrement();
-        task.setId(id);
-        task.setTitle(title);
-        task.setDescription(description);
-
-        tasks.put(id, task);
-
-
-        resp.setStatus(201);
 
     }
+
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        log.info("Пришел запрос {} на URI: {}", req.getMethod(), req.getRequestURI());
-        String pathInfo = req.getPathInfo();
-        String[] parts = pathInfo.split("/");
-        String param1 = parts[1];
-
-        tasks.remove(Integer.parseInt(param1));
-
-        resp.setStatus(202);
 
 
     }
 
-    //UPDATE
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 

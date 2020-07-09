@@ -19,7 +19,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonPropertyOrder({"id", "title", "description", "deadline_date", "executor", "done"})
+@JsonPropertyOrder({"id", "title", "description", "deadline_date", "executor", "goal", "done"})
 public class Task {
     private int id;
     private String title;
@@ -29,4 +29,5 @@ public class Task {
     private LocalDate deadline_date;
     private boolean done;
     private User executor;
+    private Goal goal;
 }

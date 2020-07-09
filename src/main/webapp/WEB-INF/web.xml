@@ -13,7 +13,7 @@
 
     <servlet>
         <servlet-name>GetJsonTaskServlet</servlet-name>
-        <servlet-class>ru.home.taskswebservice.servlets.rest.JsonTaskServlet</servlet-class>
+        <servlet-class>ru.home.taskswebservice.servlets.JsonTaskServlet</servlet-class>
     </servlet>
 
 
