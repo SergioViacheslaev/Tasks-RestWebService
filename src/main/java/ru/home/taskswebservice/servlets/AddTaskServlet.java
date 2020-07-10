@@ -5,7 +5,6 @@ import ru.home.taskswebservice.dao.TaskDaoJDBC;
 import ru.home.taskswebservice.dao.jdbc.sessionmanager.SessionManagerException;
 import ru.home.taskswebservice.model.Task;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,7 +21,7 @@ public class AddTaskServlet extends HttpServlet {
     private TaskDaoJDBC taskDao;
 
     @Override
-    public void init() throws ServletException {
+    public void init() {
 
         final Object taskDAO = getServletContext().getAttribute("taskDAO");
         this.taskDao = (TaskDaoJDBC) taskDAO;
@@ -31,7 +30,7 @@ public class AddTaskServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws IOException {
         req.setCharacterEncoding("UTF-8");
         resp.setContentType("application/json; charset=UTF-8");
 

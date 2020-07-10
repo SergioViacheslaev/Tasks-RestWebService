@@ -4,7 +4,6 @@ package ru.home.taskswebservice.servlets;
 import lombok.SneakyThrows;
 import ru.home.taskswebservice.dao.TaskDaoJDBC;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,7 +13,7 @@ public class DeleteTaskServlet extends HttpServlet {
     private TaskDaoJDBC taskDao;
 
     @Override
-    public void init() throws ServletException {
+    public void init() {
 
         final Object taskDAO = getServletContext().getAttribute("taskDAO");
         this.taskDao = (TaskDaoJDBC) taskDAO;
@@ -23,8 +22,7 @@ public class DeleteTaskServlet extends HttpServlet {
 
     @SneakyThrows
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException  {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
 
         req.setCharacterEncoding("UTF-8");
         long task_id = Long.parseLong(req.getParameter("id"));

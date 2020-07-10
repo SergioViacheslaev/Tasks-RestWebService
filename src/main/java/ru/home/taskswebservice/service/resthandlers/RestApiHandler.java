@@ -15,6 +15,6 @@ import java.util.Optional;
 public interface RestApiHandler {
     Optional<String> handleRestRequest(String requestPath) throws SQLException, JsonProcessingException;
 
-    long handleRestRequest(String requestPath, HttpServletRequest request) throws SQLException, IOException, JsonProcessingException;
+    long handleRestRequest(String requestPath, HttpServletRequest request) throws SQLException, IOException;
 
 }

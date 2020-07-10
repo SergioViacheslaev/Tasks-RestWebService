@@ -47,7 +47,7 @@ public class RestApiGetHandlerService implements RestApiHandler {
     }
 
     @Override
-    public long handleRestRequest(String requestPath, HttpServletRequest request) throws SQLException, JsonProcessingException {
+    public long handleRestRequest(String requestPath, HttpServletRequest request) {
         throw new UnsupportedOperationException();
     }
 }

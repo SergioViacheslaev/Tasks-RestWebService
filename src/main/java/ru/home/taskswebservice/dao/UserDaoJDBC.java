@@ -17,7 +17,6 @@ public class UserDaoJDBC implements UserDao {
 
 
     private final SessionManager sessionManager;
-
     public UserDaoJDBC(final SessionManager sessionManager) {
         this.sessionManager = sessionManager;
     }
@@ -33,7 +32,6 @@ public class UserDaoJDBC implements UserDao {
             pst.setString(1, username);
 
             try (ResultSet rs = pst.executeQuery()) {
-
                 if (rs.next()) {
                     dbUser = new User();
                     dbUser.setId(Integer.parseInt(rs.getString("id")));

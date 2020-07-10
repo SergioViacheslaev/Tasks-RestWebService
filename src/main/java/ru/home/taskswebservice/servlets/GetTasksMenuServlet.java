@@ -3,7 +3,6 @@ package ru.home.taskswebservice.servlets;
 import lombok.SneakyThrows;
 import ru.home.taskswebservice.dao.TaskDaoJDBC;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -15,7 +14,7 @@ public class GetTasksMenuServlet extends HttpServlet {
     private TaskDaoJDBC taskDao;
 
     @Override
-    public void init() throws ServletException {
+    public void init() {
 
         final Object taskDAO = getServletContext().getAttribute("taskDAO");
         this.taskDao = (TaskDaoJDBC) taskDAO;
@@ -24,8 +23,7 @@ public class GetTasksMenuServlet extends HttpServlet {
 
     @SneakyThrows
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         String email = (String) req.getSession(false).getAttribute("email");
         req.setAttribute("tasks", taskDao.findAllByPrimaryKey(email));
         req.getRequestDispatcher("/WEB-INF/view/tasksMenuPage.jsp").forward(req, resp);

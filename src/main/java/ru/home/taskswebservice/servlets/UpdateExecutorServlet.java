@@ -4,14 +4,12 @@ import lombok.SneakyThrows;
 import ru.home.taskswebservice.dao.TaskDaoJDBC;
 import ru.home.taskswebservice.model.Task;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.format.DateTimeFormatter;
 
 /**
  * @author Sergei Viacheslaev
@@ -19,11 +17,10 @@ import java.time.format.DateTimeFormatter;
 @WebServlet("/update_executor")
 public class UpdateExecutorServlet extends HttpServlet {
     private static final String TASK_EXECUTOR_UPDATE_ERROR = "Произошла ошибка, исполнитель не обновлен\n";
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private TaskDaoJDBC taskDao;
 
     @Override
-    public void init() throws ServletException {
+    public void init() {
         final Object taskDAO = getServletContext().getAttribute("taskDAO");
         this.taskDao = (TaskDaoJDBC) taskDAO;
 
@@ -31,7 +28,7 @@ public class UpdateExecutorServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws IOException {
         req.setCharacterEncoding("UTF-8");
 
         final int id = Integer.parseInt(req.getParameter("id"));
@@ -54,8 +51,7 @@ public class UpdateExecutorServlet extends HttpServlet {
 
     @SneakyThrows
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
 
         final String id = req.getParameter("id");
 

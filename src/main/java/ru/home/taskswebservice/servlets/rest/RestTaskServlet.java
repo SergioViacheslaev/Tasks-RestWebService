@@ -75,7 +75,7 @@ public class RestTaskServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         log.info("Пришел запрос {} на URI: {}", req.getMethod(), req.getRequestURI());
         String pathInfo = req.getPathInfo();
         req.setCharacterEncoding("UTF-8");
@@ -103,7 +103,7 @@ public class RestTaskServlet extends HttpServlet {
 
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         log.info("Пришел запрос {} на URI: {}", req.getMethod(), req.getRequestURI());
         String pathInfo = req.getPathInfo();
         req.setCharacterEncoding("UTF-8");
@@ -125,7 +125,7 @@ public class RestTaskServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         log.info("Пришел запрос {} на URI: {}", req.getMethod(), req.getRequestURI());
         String pathInfo = req.getPathInfo();
         req.setCharacterEncoding("UTF-8");

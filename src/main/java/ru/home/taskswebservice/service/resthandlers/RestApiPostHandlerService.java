@@ -36,18 +36,13 @@ public class RestApiPostHandlerService implements RestApiHandler {
     public long handleRestRequest(String requestPath, HttpServletRequest req) throws SQLException, IOException {
         long generated_id = 0;
         if (requestPath.matches("^/tasks/$")) {
-
             String bodyParams = req.getReader().lines().collect(Collectors.joining());
-
             Task task = objectMapper.readValue(bodyParams, Task.class);
-
             generated_id = taskDao.insertTaskWithoutGoal(task, task.getExecutor().getUsername());
 
         } else if (requestPath.matches("^/tasks/goals$")) {
             String bodyParams = req.getReader().lines().collect(Collectors.joining());
-
             Task task = objectMapper.readValue(bodyParams, Task.class);
-
             generated_id = taskDao.insertTaskWithGoal(task, task.getExecutor().getUsername());
         }
 

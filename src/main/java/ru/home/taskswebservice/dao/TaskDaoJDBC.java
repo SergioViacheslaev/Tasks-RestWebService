@@ -22,7 +22,6 @@ public class TaskDaoJDBC implements TaskDao {
         this.sessionManager = sessionManager;
     }
 
-
     @Override
     public long insertTask(final Task task) throws SQLException {
         sessionManager.beginSession();
@@ -47,7 +46,6 @@ public class TaskDaoJDBC implements TaskDao {
             sessionManager.rollbackSession();
             throw ex;
         }
-
 
     }
 
@@ -177,12 +175,8 @@ public class TaskDaoJDBC implements TaskDao {
              PreparedStatement pst = connection.prepareStatement(SQLTask.UPDATE_TASK_EXECUTOR.QUERY)) {
             pst.setString(1, executor_username);
             pst.setLong(2, task.getId());
-
             rowsUpdated = pst.executeUpdate();
-
             sessionManager.commitSession();
-
-
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
             throw ex;
@@ -200,17 +194,14 @@ public class TaskDaoJDBC implements TaskDao {
         try (Connection connection = sessionManager.getCurrentSession();
              PreparedStatement pst = connection.prepareStatement(SQLTask.DELETE_TASK_BY_ID.QUERY)) {
             pst.setLong(1, task_id);
-
             updated_rows = pst.executeUpdate();
             sessionManager.commitSession();
-
 
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
             sessionManager.rollbackSession();
             throw ex;
         }
-
         return updated_rows;
     }
 

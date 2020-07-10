@@ -67,9 +67,7 @@ public class RegistrationServlet extends HttpServlet {
             resp.getWriter().write(EMAIL_INCORRECTLY_FILLED);
         }
 
-
     }
-
 
     private boolean validateEmail(String emailStr) {
         log.info("User's EMAIL input: {}", emailStr);

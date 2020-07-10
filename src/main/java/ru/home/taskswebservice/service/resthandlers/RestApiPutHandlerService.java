@@ -53,16 +53,11 @@ public class RestApiPutHandlerService implements RestApiHandler {
                 return taskDao.updateTaskExecutor(task, map.get("executor_username"));
             }
 
-
             Task task = objectMapper.readValue(bodyParams, Task.class);
             task.setId(task_id);
 
-
             //update Task without Executor
             updatedRows = taskDao.update(task);
-
-        } else {
-
         }
 
         return updatedRows;

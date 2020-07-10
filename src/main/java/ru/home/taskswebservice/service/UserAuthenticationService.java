@@ -26,7 +26,6 @@ public class UserAuthenticationService implements Authentication {
             if (optionalUser.isEmpty()) return false;
 
             final User user = optionalUser.get();
-
             return user.getPassword_hash().equals(DigestUtils.md5Hex(inputPassword));
         } catch (SQLException e) {
             e.printStackTrace();

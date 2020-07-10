@@ -1,6 +1,5 @@
 package ru.home.taskswebservice.service.resthandlers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,12 +25,12 @@ public class RestApiDeleteHandlerService implements RestApiHandler {
     private TaskDaoJDBC taskDao;
 
     @Override
-    public Optional<String> handleRestRequest(String requestPath) throws SQLException, JsonProcessingException {
+    public Optional<String> handleRestRequest(String requestPath) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public long handleRestRequest(String requestPath, HttpServletRequest req) throws SQLException, JsonProcessingException {
+    public long handleRestRequest(String requestPath, HttpServletRequest req) throws SQLException {
         long updated_rows = 0;
         if (requestPath.matches("^/tasks/\\d+$")) {
             String[] parts = requestPath.split("/");

@@ -5,9 +5,7 @@ import ru.home.taskswebservice.model.User;
 import java.sql.SQLException;
 import java.util.Optional;
 
-/**
- * @author Sergei Viacheslaev
- */
+
 public interface UserDao {
     int insertUser(User user) throws SQLException;
 

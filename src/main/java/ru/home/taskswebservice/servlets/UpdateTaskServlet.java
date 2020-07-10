@@ -4,7 +4,6 @@ import lombok.SneakyThrows;
 import ru.home.taskswebservice.dao.TaskDaoJDBC;
 import ru.home.taskswebservice.model.Task;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,14 +18,14 @@ public class UpdateTaskServlet extends HttpServlet {
     private TaskDaoJDBC taskDao;
 
     @Override
-    public void init() throws ServletException {
+    public void init() {
         final Object taskDAO = getServletContext().getAttribute("taskDAO");
         this.taskDao = (TaskDaoJDBC) taskDAO;
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws IOException {
         req.setCharacterEncoding("UTF-8");
 
         final int id = Integer.parseInt(req.getParameter("id"));
@@ -55,8 +54,7 @@ public class UpdateTaskServlet extends HttpServlet {
 
     @SneakyThrows
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
 
         final String id = req.getParameter("id");
         final Task task = taskDao.findById(Long.parseLong(id)).get();

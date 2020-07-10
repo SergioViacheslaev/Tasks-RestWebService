@@ -23,7 +23,6 @@ public class UserRegistrationService implements UserRegistration {
     private final String EMAIL_ALREADY_REGISTERED_MSG = "Пользователь с таким email уже зарегистрирован !";
     private UserDaoJDBC userDaoJDBC;
 
-
     @Override
     public int registerUser(String username, String password, String name, String surname, String email)
             throws SQLException, UserAlreadyRegisteredException, EmailAlreadyRegisteredException {

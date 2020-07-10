@@ -20,7 +20,7 @@ public class LoginServlet extends HttpServlet {
     private Authentication authenticationService;
 
     @Override
-    public void init() throws ServletException {
+    public void init() {
         this.authenticationService = (Authentication) getServletContext().getAttribute("userAuthService");
     }
 
@@ -30,7 +30,7 @@ public class LoginServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
