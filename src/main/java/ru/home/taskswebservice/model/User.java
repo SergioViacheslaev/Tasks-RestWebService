@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 public class User {
     @JsonIgnore
     private int id;
-    @JsonIgnore
     private String username;
     @JsonIgnore
     private String password_hash;

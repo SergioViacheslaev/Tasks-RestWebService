@@ -12,7 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.sql.SQLException;
 import java.util.Optional;
 
-/**
+/** GET handler
+ *
  * @author Sergei Viacheslaev
  */
 @Getter

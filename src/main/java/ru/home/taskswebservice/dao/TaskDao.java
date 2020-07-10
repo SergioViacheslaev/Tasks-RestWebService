@@ -13,7 +13,7 @@ public interface TaskDao {
 
     int updateTaskExecutor(Task model, String executor_username) throws SQLException;
 
-    boolean update(Task task) throws SQLException;
+    int update(Task task) throws SQLException;
 
     List<Task> findAllByPrimaryKey(Object pkey) throws SQLException;
 

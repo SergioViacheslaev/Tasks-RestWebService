@@ -68,8 +68,10 @@ public class TaskDaoJDBC implements TaskDao {
                     task.setDeadline_date(TimeUtils.convertToLocalDateViaSqlDate(rs.getDate("deadline_date")));
                     task.setDone(rs.getBoolean("done"));
                     User user = new User();
+                    user.setUsername(rs.getString("username"));
                     user.setName(rs.getString("name"));
                     user.setSurname(rs.getString("surname"));
+                    user.setEmail(rs.getString("email"));
                     task.setExecutor(user);
 
                     String goalId = rs.getString("goal_id");
@@ -121,8 +123,8 @@ public class TaskDaoJDBC implements TaskDao {
     }
 
     @Override
-    public boolean update(Task task) throws SQLException {
-        boolean result;
+    public int update(Task task) throws SQLException {
+        int rowsUpdated = 0;
         sessionManager.beginSession();
 
         try (Connection connection = sessionManager.getCurrentSession();
@@ -133,26 +135,20 @@ public class TaskDaoJDBC implements TaskDao {
             pst.setBoolean(4, task.isDone());
             pst.setInt(5, task.getId());
 
-
-            int rows = pst.executeUpdate();
-            result = rows == 1;
-
+            rowsUpdated = pst.executeUpdate();
             sessionManager.commitSession();
-
 
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
             sessionManager.rollbackSession();
             throw ex;
         }
-
-        return result;
+        return rowsUpdated;
     }
 
     @Override
     public int updateTaskExecutor(Task task, String executor_username) throws SQLException {
         int rowsUpdated;
-
 
         sessionManager.beginSession();
         try (Connection connection = sessionManager.getCurrentSession();
@@ -273,8 +269,9 @@ public class TaskDaoJDBC implements TaskDao {
                 " INNER JOIN tasks_users on users.id = tasks_users.user_id" +
                 " INNER JOIN tasks on tasks.id = tasks_users.task_id" +
                 " WHERE users.email = (?)"),
-        GET_TASK_BY_ID("select tasks.id, tasks.title, tasks.description, tasks.deadline_date, tasks.done, users.name, users.surname," +
-                "goals.id AS goal_id, goals.name AS goal_name, goals.description AS goal_description" +
+        GET_TASK_BY_ID("select tasks.id, tasks.title, tasks.description, tasks.deadline_date, tasks.done, users.username," +
+                " users.name, users.surname, users.email," +
+                " goals.id AS goal_id, goals.name AS goal_name, goals.description AS goal_description" +
                 " from tasks INNER JOIN tasks_users ON tasks.id = tasks_users.task_id" +
                 " INNER JOIN users ON users.id = tasks_users.user_id" +
                 " LEFT OUTER JOIN tasks_goals ON tasks.id = tasks_goals.task_id" +
