@@ -20,6 +20,7 @@
         Описание: <c:out value="${task.description}"/> <br>
         Срок выполнения: <c:out value="${task.deadline_date}"/> <br>
         Исполнитель: <c:out value="${task.executor.name}"/> <c:out value="${task.executor.surname}"/> <br>
+        Цель: <c:out value="${task.goal.name}"/> <br>
         Выполнена: <c:out value="${task.done}"/> <br>
     </ul>
     <hr/>

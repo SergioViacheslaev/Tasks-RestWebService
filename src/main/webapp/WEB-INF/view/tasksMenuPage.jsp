@@ -19,6 +19,8 @@
         Название: <c:out value="${task.title}"/> <br>
         Описание: <c:out value="${task.description}"/> <br>
         Срок выполнения: <c:out value="${task.deadline_date}"/> <br>
+        Исполнитель: <c:out value="${task.executor.username}"/> <br>
+        Цель: <c:out value="${task.goal.name}"/> <br>
         Выполнена: <c:out value="${task.done}"/> <br>
 
         <form method="get" action="<c:url value='/update_task'/>">

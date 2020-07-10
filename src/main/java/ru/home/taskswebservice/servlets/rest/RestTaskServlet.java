@@ -23,6 +23,7 @@ public class RestTaskServlet extends HttpServlet {
     private static final String TASK_ADD_ERROR = "Произошла ошибка, задача не добавлена !\n";
     private static final String TASK_EXECUTOR_NOT_FOUND = "Исполнитель с таким username не найден в БД\n";
     private static final String TASK_UPDATE_ERROR = "Произошла ошибка, задача не обновлена\n";
+    private static final String TASK_DELETE_ERROR = "Произошла ошибка, задача не удалена\n";
     private static final String TASK_CREATED_SUCCESS_JSON = "{ \"task_id\" : \"%d\" }";
     private TaskDaoJDBC taskDao;
     private RestApiHandler restApiGetHandler;
@@ -47,7 +48,7 @@ public class RestTaskServlet extends HttpServlet {
 
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         log.info("Пришел запрос {} на URI: {}", req.getMethod(), req.getRequestURI());
         String pathInfo = req.getPathInfo();
         req.setCharacterEncoding("UTF-8");
@@ -83,7 +84,7 @@ public class RestTaskServlet extends HttpServlet {
         try {
             long generated_id = restApiPostHandler.handleRestRequest(pathInfo, req);
             resp.setContentType("application/json; charset=UTF-8");
-            resp.getWriter().write(String.format(TASK_CREATED_SUCCESS_JSON,generated_id));
+            resp.getWriter().write(String.format(TASK_CREATED_SUCCESS_JSON, generated_id));
             resp.setStatus(201);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -103,6 +104,24 @@ public class RestTaskServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        log.info("Пришел запрос {} на URI: {}", req.getMethod(), req.getRequestURI());
+        String pathInfo = req.getPathInfo();
+        req.setCharacterEncoding("UTF-8");
+        resp.setContentType("text/HTML; charset=UTF-8");
+
+        try {
+            long deleted_rows = restApiDeleteHandler.handleRestRequest(pathInfo, req);
+            if (deleted_rows != 0) {
+                resp.setStatus(200);
+            } else {
+                throw new SQLException();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            resp.setStatus(400);
+            resp.getWriter().write(TASK_DELETE_ERROR);
+        }
+
     }
 
     @Override
@@ -116,8 +135,9 @@ public class RestTaskServlet extends HttpServlet {
             restApiPutHandler.handleRestRequest(pathInfo, req);
             resp.setStatus(200);
         } catch (SQLException e) {
+            e.printStackTrace();
             resp.setStatus(400);
-            resp.getWriter().write(TASK_UPDATE_ERROR + e.getMessage());
+            resp.getWriter().write(TASK_UPDATE_ERROR);
         }
     }
 

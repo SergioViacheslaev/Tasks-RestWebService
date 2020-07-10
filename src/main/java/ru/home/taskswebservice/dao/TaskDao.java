@@ -21,5 +21,5 @@ public interface TaskDao {
 
     long insertTaskForUser(Task task, String executor_username) throws SQLException;
 
-    public boolean deleteTaskById(Long task_id) throws SQLException;
+    int deleteTaskById(Long task_id) throws SQLException;
 }

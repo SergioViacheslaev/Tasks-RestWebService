@@ -61,28 +61,7 @@ public class TaskDaoJDBC implements TaskDao {
 
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
-                    task = new Task();
-                    task.setId(Integer.parseInt(rs.getString("id")));
-                    task.setTitle(rs.getString("title"));
-                    task.setDescription(rs.getString("description"));
-                    task.setDeadline_date(TimeUtils.convertToLocalDateViaSqlDate(rs.getDate("deadline_date")));
-                    task.setDone(rs.getBoolean("done"));
-                    User user = new User();
-                    user.setUsername(rs.getString("username"));
-                    user.setName(rs.getString("name"));
-                    user.setSurname(rs.getString("surname"));
-                    user.setEmail(rs.getString("email"));
-                    task.setExecutor(user);
-
-                    String goalId = rs.getString("goal_id");
-                    if (goalId != null) {
-                        Goal goal = new Goal();
-                        goal.setId(Integer.parseInt(goalId));
-                        goal.setName(rs.getString("goal_name"));
-                        goal.setDescription(rs.getString("goal_description"));
-                        task.setGoal(goal);
-                    }
-
+                    task = parseTaskFromResultSet(rs);
                 }
             }
         } catch (SQLException ex) {
@@ -171,17 +150,15 @@ public class TaskDaoJDBC implements TaskDao {
 
 
     @Override
-    public boolean deleteTaskById(Long task_id) throws SQLException {
-        boolean result;
+    public int deleteTaskById(Long task_id) throws SQLException {
+        int updated_rows;
 
         sessionManager.beginSession();
         try (Connection connection = sessionManager.getCurrentSession();
              PreparedStatement pst = connection.prepareStatement(SQLTask.DELETE_TASK_BY_ID.QUERY)) {
             pst.setLong(1, task_id);
 
-            int rows = pst.executeUpdate();
-            result = rows == 1;
-
+            updated_rows = pst.executeUpdate();
             sessionManager.commitSession();
 
 
@@ -191,7 +168,7 @@ public class TaskDaoJDBC implements TaskDao {
             throw ex;
         }
 
-        return result;
+        return updated_rows;
     }
 
 
@@ -207,12 +184,7 @@ public class TaskDaoJDBC implements TaskDao {
 
             try (ResultSet rs = pst.executeQuery()) {
                 while (rs.next()) {
-                    Task task = new Task();
-                    task.setId(Integer.parseInt(rs.getString("id")));
-                    task.setTitle(rs.getString("title"));
-                    task.setDescription(rs.getString("description"));
-                    task.setDeadline_date(TimeUtils.convertToLocalDateViaSqlDate(rs.getDate("deadline_date")));
-                    task.setDone(rs.getBoolean("done"));
+                    Task task = parseTaskFromResultSet(rs);
                     userTasks.add(task);
                 }
             }
@@ -232,21 +204,11 @@ public class TaskDaoJDBC implements TaskDao {
 
         sessionManager.beginSession();
         try (Connection connection = sessionManager.getCurrentSession();
-             PreparedStatement pst = connection.prepareStatement(SQLTask.GET_ALL_TASKS_WITH_EXECUTORS.QUERY)) {
+             PreparedStatement pst = connection.prepareStatement(SQLTask.GET_ALL_TASKS.QUERY)) {
 
             try (ResultSet rs = pst.executeQuery()) {
                 while (rs.next()) {
-                    Task task = new Task();
-                    task.setId(Integer.parseInt(rs.getString("id")));
-                    task.setTitle(rs.getString("title"));
-                    task.setDescription(rs.getString("description"));
-                    task.setDeadline_date(TimeUtils.convertToLocalDateViaSqlDate(rs.getDate("deadline_date")));
-                    task.setDone(rs.getBoolean("done"));
-                    User user = new User();
-                    user.setName(rs.getString("name"));
-                    user.setSurname(rs.getString("surname"));
-                    task.setExecutor(user);
-                    userTasks.add(task);
+                    userTasks.add(parseTaskFromResultSet(rs));
                 }
             }
         } catch (SQLException ex) {
@@ -263,11 +225,13 @@ public class TaskDaoJDBC implements TaskDao {
      */
     enum SQLTask {
         INSERT_TASK("INSERT INTO tasks (title, description, deadline_date, done) VALUES ((?), (?),(?), (?))"),
-        GET_TASKS_BY_EMAIL("SELECT tasks.id, tasks.title, tasks.description," +
-                " tasks.deadline_date, tasks.done" +
-                " from users" +
-                " INNER JOIN tasks_users on users.id = tasks_users.user_id" +
-                " INNER JOIN tasks on tasks.id = tasks_users.task_id" +
+        GET_TASKS_BY_EMAIL("select tasks.id, tasks.title, tasks.description, tasks.deadline_date, tasks.done, users.username," +
+                " users.name, users.surname, users.email," +
+                " goals.id AS goal_id, goals.name AS goal_name, goals.description AS goal_description" +
+                " from tasks INNER JOIN tasks_users ON tasks.id = tasks_users.task_id" +
+                " INNER JOIN users ON users.id = tasks_users.user_id" +
+                " LEFT OUTER JOIN tasks_goals ON tasks.id = tasks_goals.task_id" +
+                " LEFT OUTER JOIN goals ON goals.id = tasks_goals.goal_id" +
                 " WHERE users.email = (?)"),
         GET_TASK_BY_ID("select tasks.id, tasks.title, tasks.description, tasks.deadline_date, tasks.done, users.username," +
                 " users.name, users.surname, users.email," +
@@ -277,9 +241,13 @@ public class TaskDaoJDBC implements TaskDao {
                 " LEFT OUTER JOIN tasks_goals ON tasks.id = tasks_goals.task_id" +
                 " LEFT OUTER JOIN goals ON goals.id = tasks_goals.goal_id" +
                 " WHERE tasks.id = (?)"),
-        GET_ALL_TASKS_WITH_EXECUTORS("select tasks.id, tasks.title, tasks.description,tasks.deadline_date, tasks.done, users.name, users.surname" +
+        GET_ALL_TASKS("select tasks.id, tasks.title, tasks.description, tasks.deadline_date, tasks.done, users.username," +
+                " users.name, users.surname, users.email," +
+                " goals.id AS goal_id, goals.name AS goal_name, goals.description AS goal_description" +
                 " from tasks INNER JOIN tasks_users ON tasks.id = tasks_users.task_id" +
-                " INNER JOIN users ON users.id = tasks_users.user_id"),
+                " INNER JOIN users ON users.id = tasks_users.user_id" +
+                " LEFT OUTER JOIN tasks_goals ON tasks.id = tasks_goals.task_id" +
+                " LEFT OUTER JOIN goals ON goals.id = tasks_goals.goal_id"),
         INSERT_TASK_FOR_USER("with task_insert as (INSERT INTO tasks (title, description, deadline_date, done) " +
                 "VALUES ((?), (?),(?), (?)) RETURNING id) " +
                 "INSERT into tasks_users(task_id,user_id) " +
@@ -296,5 +264,31 @@ public class TaskDaoJDBC implements TaskDao {
         SQLTask(String QUERY) {
             this.QUERY = QUERY;
         }
+
+    }
+
+    private Task parseTaskFromResultSet(ResultSet rs) throws SQLException {
+        Task task = new Task();
+        task.setId(Integer.parseInt(rs.getString("id")));
+        task.setTitle(rs.getString("title"));
+        task.setDescription(rs.getString("description"));
+        task.setDeadline_date(TimeUtils.convertToLocalDateViaSqlDate(rs.getDate("deadline_date")));
+        task.setDone(rs.getBoolean("done"));
+        User user = new User();
+        user.setUsername(rs.getString("username"));
+        user.setName(rs.getString("name"));
+        user.setSurname(rs.getString("surname"));
+        user.setEmail(rs.getString("email"));
+        task.setExecutor(user);
+
+        String goalId = rs.getString("goal_id");
+        if (goalId != null) {
+            Goal goal = new Goal();
+            goal.setId(Integer.parseInt(goalId));
+            goal.setName(rs.getString("goal_name"));
+            goal.setDescription(rs.getString("goal_description"));
+            task.setGoal(goal);
+        }
+        return task;
     }
 }

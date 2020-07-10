@@ -10,9 +10,11 @@ import ru.home.taskswebservice.model.Task;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
-/** GET handler
+/**
+ * GET handler
  *
  * @author Sergei Viacheslaev
  */
@@ -36,6 +38,9 @@ public class RestApiGetHandlerService implements RestApiHandler {
             return Optional.ofNullable(jsonTask);
 
 
+        } else if (requestPath.matches("^/tasks/$")) {
+            final List<Task> allTasks = taskDao.findAll();
+            return Optional.ofNullable(objectMapper.writeValueAsString(allTasks));
         }
 
         return Optional.empty();
