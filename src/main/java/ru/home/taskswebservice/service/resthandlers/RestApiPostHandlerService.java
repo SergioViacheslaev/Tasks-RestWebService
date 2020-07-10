@@ -1,6 +1,5 @@
 package ru.home.taskswebservice.service.resthandlers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +14,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/** POST handler
+/**
+ * POST handler
  *
  * @author Sergei Viacheslaev
  */
@@ -28,7 +28,7 @@ public class RestApiPostHandlerService implements RestApiHandler {
     private TaskDaoJDBC taskDao;
 
     @Override
-    public Optional<String> handleRestRequest(String requestPath) throws SQLException, JsonProcessingException {
+    public Optional<String> handleRestRequest(String requestPath) {
         throw new UnsupportedOperationException();
     }
 
@@ -41,8 +41,14 @@ public class RestApiPostHandlerService implements RestApiHandler {
 
             Task task = objectMapper.readValue(bodyParams, Task.class);
 
-            generated_id = taskDao.insertTaskForUser(task, task.getExecutor().getUsername());
+            generated_id = taskDao.insertTaskWithoutGoal(task, task.getExecutor().getUsername());
 
+        } else if (requestPath.matches("^/tasks/goals$")) {
+            String bodyParams = req.getReader().lines().collect(Collectors.joining());
+
+            Task task = objectMapper.readValue(bodyParams, Task.class);
+
+            generated_id = taskDao.insertTaskWithGoal(task, task.getExecutor().getUsername());
         }
 
         return generated_id;

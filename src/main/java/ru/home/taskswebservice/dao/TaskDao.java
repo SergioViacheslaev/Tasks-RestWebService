@@ -19,7 +19,9 @@ public interface TaskDao {
 
     List<Task> findAll() throws SQLException;
 
-    long insertTaskForUser(Task task, String executor_username) throws SQLException;
+    long insertTaskWithoutGoal(Task task, String executor_username) throws SQLException;
+
+    long insertTaskWithGoal(Task task, String executor_username) throws SQLException;
 
     int deleteTaskById(Long task_id) throws SQLException;
 }

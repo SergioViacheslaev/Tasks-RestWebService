@@ -48,7 +48,7 @@ public class AddTaskServlet extends HttpServlet {
         task.setDone(doneCheckbox);
 
         try {
-            taskDao.insertTaskForUser(task, executorUsername);
+            taskDao.insertTaskWithoutGoal(task, executorUsername);
             resp.sendRedirect(req.getContextPath() + "/tasksmenu");
 
         } catch (SQLException | SessionManagerException e) {

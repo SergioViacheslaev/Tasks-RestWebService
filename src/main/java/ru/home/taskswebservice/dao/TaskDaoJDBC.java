@@ -75,11 +75,11 @@ public class TaskDaoJDBC implements TaskDao {
     }
 
     @Override
-    public long insertTaskForUser(Task task, String executor_username) throws SQLException {
+    public long insertTaskWithoutGoal(Task task, String executor_username) throws SQLException {
         sessionManager.beginSession();
 
         try (Connection connection = sessionManager.getCurrentSession();
-             PreparedStatement pst = connection.prepareStatement(SQLTask.INSERT_TASK_FOR_USER.QUERY, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement pst = connection.prepareStatement(SQLTask.INSERT_TASK_WITHOUT_GOAL.QUERY, Statement.RETURN_GENERATED_KEYS)) {
             pst.setString(1, task.getTitle());
             pst.setString(2, task.getDescription());
             pst.setDate(3, Date.valueOf(task.getDeadline_date()));
@@ -99,6 +99,49 @@ public class TaskDaoJDBC implements TaskDao {
             throw ex;
         }
 
+    }
+
+    @Override
+    public long insertTaskWithGoal(Task task, String executor_username) throws SQLException {
+        long generated_taskId;
+        sessionManager.beginSession();
+
+        try (Connection connection = sessionManager.getCurrentSession();
+             PreparedStatement pst = connection.prepareStatement(SQLTask.INSERT_TASK_WITHOUT_GOAL.QUERY, Statement.RETURN_GENERATED_KEYS)) {
+            pst.setString(1, task.getTitle());
+            pst.setString(2, task.getDescription());
+            pst.setDate(3, Date.valueOf(task.getDeadline_date()));
+            pst.setBoolean(4, task.isDone());
+            pst.setString(5, executor_username);
+
+            pst.executeUpdate();
+            try (ResultSet rs = pst.getGeneratedKeys()) {
+                rs.next();
+                generated_taskId = rs.getLong(1);
+                sessionManager.commitSession();
+            }
+
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
+            throw ex;
+        }
+
+        sessionManager.beginSession();
+        try (Connection connection = sessionManager.getCurrentSession();
+             PreparedStatement pst = connection.prepareStatement(SQLTask.INSERT_TASKS_GOALS.QUERY)) {
+            pst.setString(1, task.getGoal().getName());
+            pst.setString(2, task.getGoal().getDescription());
+            pst.setLong(3, generated_taskId);
+
+            pst.executeUpdate();
+            sessionManager.commitSession();
+
+        } catch (SQLException ex) {
+            log.error(ex.getMessage(), ex);
+            throw ex;
+        }
+
+        return generated_taskId;
     }
 
     @Override
@@ -248,7 +291,7 @@ public class TaskDaoJDBC implements TaskDao {
                 " INNER JOIN users ON users.id = tasks_users.user_id" +
                 " LEFT OUTER JOIN tasks_goals ON tasks.id = tasks_goals.task_id" +
                 " LEFT OUTER JOIN goals ON goals.id = tasks_goals.goal_id"),
-        INSERT_TASK_FOR_USER("with task_insert as (INSERT INTO tasks (title, description, deadline_date, done) " +
+        INSERT_TASK_WITHOUT_GOAL("with task_insert as (INSERT INTO tasks (title, description, deadline_date, done) " +
                 "VALUES ((?), (?),(?), (?)) RETURNING id) " +
                 "INSERT into tasks_users(task_id,user_id) " +
                 "VALUES " +
@@ -257,7 +300,12 @@ public class TaskDaoJDBC implements TaskDao {
         UPDATE_TASK_BY_ID("UPDATE tasks set title=(?), description=(?), deadline_date=(?), done=(?) where id=(?)"),
         UPDATE_TASK_EXECUTOR("UPDATE tasks_users" +
                 " set user_id=(select users.id from users where users.username =(?) )" +
-                " where task_id=(?)");
+                " where task_id=(?)"),
+        INSERT_TASKS_GOALS("with goals_insert as (INSERT INTO goals (name, description)" +
+                " VALUES ((?), (?)) RETURNING id)" +
+                " INSERT into tasks_goals(task_id,goal_id)" +
+                " VALUES" +
+                " ((?),(SELECT id from goals_insert))");
 
         String QUERY;
 
