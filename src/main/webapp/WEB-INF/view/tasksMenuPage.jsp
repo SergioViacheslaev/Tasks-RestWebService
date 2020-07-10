@@ -49,8 +49,8 @@
     <label>Название <input type="text" name="title" required></label><br>
     <label>Описание <input type="text" name="description" required></label><br>
     <label>Срок выполнения <input type="date" name="deadline_date" required></label><br>
-    <label>Исполнитель <input type="text" name="username"></label><br>
-    <label>Выполнена <input type="checkbox" name="done"></label><br>
+    <label>Исполнитель <input type="text" name="username" required></label><br>
+    <label>Выполнена <input type="checkbox" name="done" ></label><br>
 
     <input type="submit" value="Ok" name="Ok"><br>
 </form>

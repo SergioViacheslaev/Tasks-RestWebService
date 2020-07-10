@@ -41,10 +41,6 @@ public class AddTaskServlet extends HttpServlet {
         final boolean doneCheckbox = req.getParameter("done") != null;
         String executorUsername = req.getParameter("username");
 
-        if (executorUsername.isEmpty()) {
-            executorUsername = (String) req.getSession(false).getAttribute("username");
-        }
-
         final Task task = new Task();
         task.setTitle(title);
         task.setDescription(description);

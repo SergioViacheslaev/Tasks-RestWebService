@@ -8,6 +8,7 @@ import lombok.Setter;
 import ru.home.taskswebservice.dao.TaskDaoJDBC;
 import ru.home.taskswebservice.model.Task;
 
+import javax.servlet.http.HttpServletRequest;
 import java.sql.SQLException;
 import java.util.Optional;
 
@@ -37,5 +38,10 @@ public class RestApiGetHandlerService implements RestApiHandler {
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public long handleRestRequest(String requestPath, HttpServletRequest request) throws SQLException, JsonProcessingException {
+        throw new UnsupportedOperationException();
     }
 }
