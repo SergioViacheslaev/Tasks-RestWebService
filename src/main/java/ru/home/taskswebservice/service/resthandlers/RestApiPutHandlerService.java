@@ -6,7 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import ru.home.taskswebservice.dao.TaskDaoJDBC;
+import ru.home.taskswebservice.dao.GoalDao;
+import ru.home.taskswebservice.dao.TaskDao;
 import ru.home.taskswebservice.model.Task;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +29,8 @@ import java.util.stream.Collectors;
 public class RestApiPutHandlerService implements RestApiHandler {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private TaskDaoJDBC taskDao;
+    private TaskDao taskDao;
+    private GoalDao goalDao;
 
     @Override
     public Optional<String> handleRestRequest(String requestPath) throws SQLException, JsonProcessingException {

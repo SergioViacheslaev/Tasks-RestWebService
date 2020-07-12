@@ -255,7 +255,7 @@ public class TaskDaoJDBC implements TaskDao {
     }
 
     /**
-     * SQL queries for users table.
+     * SQL queries for tasks table.
      */
     enum SQLTask {
         INSERT_TASK("INSERT INTO tasks (title, description, deadline_date, done) VALUES ((?), (?),(?), (?))"),

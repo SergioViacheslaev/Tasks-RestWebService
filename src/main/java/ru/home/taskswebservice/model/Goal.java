@@ -3,7 +3,8 @@ package ru.home.taskswebservice.model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** Цели
+/**
+ * Цели
  */
 @Data
 @NoArgsConstructor

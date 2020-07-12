@@ -24,7 +24,9 @@ public class RestTaskServlet extends HttpServlet {
     private static final String TASK_EXECUTOR_NOT_FOUND = "Исполнитель с таким username не найден в БД\n";
     private static final String TASK_UPDATE_ERROR = "Произошла ошибка, задача не обновлена\n";
     private static final String TASK_DELETE_ERROR = "Произошла ошибка, задача не удалена\n";
+    private static final String GOAL_DELETE_ERROR = "Произошла ошибка, цель не удалена\n";
     private static final String TASK_CREATED_SUCCESS_JSON = "{ \"task_id\" : \"%d\" }";
+    private static final String GOAL_CREATED_SUCCESS_JSON = "{ \"goal_id\" : \"%d\" }";
     private TaskDaoJDBC taskDao;
     private RestApiHandler restApiGetHandler;
     private RestApiHandler restApiPostHandler;
@@ -64,7 +66,11 @@ public class RestTaskServlet extends HttpServlet {
         } catch (SQLException e) {
             e.printStackTrace();
             PrintWriter out = resp.getWriter();
-            out.write("Не найдено задачи с таким ID");
+            if (pathInfo.contains("tasks")) {
+                out.write("Не найдено задачи с таким ID");
+            } else if (pathInfo.contains("goals")) {
+                out.write("Не найдено цели с таким ID");
+            }
             resp.setStatus(404);
 
         } catch (JsonProcessingException e) {
@@ -84,7 +90,11 @@ public class RestTaskServlet extends HttpServlet {
         try {
             long generated_id = restApiPostHandler.handleRestRequest(pathInfo, req);
             resp.setContentType("application/json; charset=UTF-8");
-            resp.getWriter().write(String.format(TASK_CREATED_SUCCESS_JSON, generated_id));
+            if (pathInfo.contains("tasks")) {
+                resp.getWriter().write(String.format(TASK_CREATED_SUCCESS_JSON, generated_id));
+            } else if (pathInfo.contains("goals")) {
+                resp.getWriter().write(String.format(GOAL_CREATED_SUCCESS_JSON, generated_id));
+            }
             resp.setStatus(201);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -119,7 +129,12 @@ public class RestTaskServlet extends HttpServlet {
         } catch (SQLException e) {
             e.printStackTrace();
             resp.setStatus(400);
-            resp.getWriter().write(TASK_DELETE_ERROR);
+            if (pathInfo.contains("tasks")) {
+                resp.getWriter().write(TASK_DELETE_ERROR);
+            } else if (pathInfo.contains("goals")) {
+                resp.getWriter().write(GOAL_DELETE_ERROR);
+            }
+
         }
 
     }

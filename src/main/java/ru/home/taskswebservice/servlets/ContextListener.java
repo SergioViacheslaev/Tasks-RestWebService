@@ -1,8 +1,7 @@
 package ru.home.taskswebservice.servlets;
 
 
-import ru.home.taskswebservice.dao.TaskDaoJDBC;
-import ru.home.taskswebservice.dao.UserDaoJDBC;
+import ru.home.taskswebservice.dao.*;
 import ru.home.taskswebservice.dao.datasource.DataSourceHikariPostgreSQL;
 import ru.home.taskswebservice.dao.jdbc.sessionmanager.SessionManager;
 import ru.home.taskswebservice.dao.jdbc.sessionmanager.SessionManagerJdbc;
@@ -27,7 +26,8 @@ public class ContextListener implements ServletContextListener {
 
     private Authentication authenticationService;
     private UserRegistration userRegistrationService;
-    private TaskDaoJDBC taskDaoJDBC;
+    private TaskDao taskDaoJDBC;
+    private GoalDao goalDaoJDBC;
     private RestApiHandler restApiGetHandlerService;
     private RestApiHandler restApiPostHandlerService;
     private RestApiHandler restApiPutHandlerService;
@@ -43,13 +43,14 @@ public class ContextListener implements ServletContextListener {
         SessionManager sessionManager = new SessionManagerJdbc(dataSource);
         UserDaoJDBC userDaoJDBC = new UserDaoJDBC(sessionManager);
         this.taskDaoJDBC = new TaskDaoJDBC(sessionManager);
+        this.goalDaoJDBC = new GoalDaoJDBC(sessionManager);
         authenticationService = new UserAuthenticationService(userDaoJDBC);
         userRegistrationService = new UserRegistrationService(userDaoJDBC);
 
-        restApiGetHandlerService = new RestApiGetHandlerService(taskDaoJDBC);
-        restApiPostHandlerService = new RestApiPostHandlerService(taskDaoJDBC);
-        restApiPutHandlerService = new RestApiPutHandlerService(taskDaoJDBC);
-        restApiDeleteHandlerService = new RestApiDeleteHandlerService(taskDaoJDBC);
+        restApiGetHandlerService = new RestApiGetHandlerService(taskDaoJDBC, goalDaoJDBC);
+        restApiPostHandlerService = new RestApiPostHandlerService(taskDaoJDBC, goalDaoJDBC);
+        restApiPutHandlerService = new RestApiPutHandlerService(taskDaoJDBC, goalDaoJDBC);
+        restApiDeleteHandlerService = new RestApiDeleteHandlerService(taskDaoJDBC, goalDaoJDBC);
 
         servletContext.setAttribute("userAuthService", authenticationService);
         servletContext.setAttribute("userRegistrationService", userRegistrationService);

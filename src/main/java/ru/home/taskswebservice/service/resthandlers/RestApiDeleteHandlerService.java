@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import ru.home.taskswebservice.dao.TaskDaoJDBC;
+import ru.home.taskswebservice.dao.GoalDao;
+import ru.home.taskswebservice.dao.TaskDao;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.SQLException;
@@ -22,7 +23,8 @@ import java.util.Optional;
 public class RestApiDeleteHandlerService implements RestApiHandler {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private TaskDaoJDBC taskDao;
+    private TaskDao taskDao;
+    private GoalDao goalDao;
 
     @Override
     public Optional<String> handleRestRequest(String requestPath) {
@@ -40,7 +42,15 @@ public class RestApiDeleteHandlerService implements RestApiHandler {
             updated_rows = taskDao.deleteTaskById(taskId);
 
 
+        } else if (requestPath.matches("^/goals/\\d+$")) {
+            String[] parts = requestPath.split("/");
+            String goalIdParam = parts[2];
+
+            long goalId = Long.parseLong(goalIdParam);
+            updated_rows = goalDao.deleteGoal(goalId);
         }
+
+
         return updated_rows;
     }
 }
