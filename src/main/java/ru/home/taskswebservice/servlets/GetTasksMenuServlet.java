@@ -1,14 +1,15 @@
 package ru.home.taskswebservice.servlets;
 
-
 import lombok.SneakyThrows;
 import ru.home.taskswebservice.dao.TaskDaoJDBC;
 
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class DeleteTaskServlet extends HttpServlet {
+@WebServlet(urlPatterns = "/tasksmenu")
+public class GetTasksMenuServlet extends HttpServlet {
 
     private TaskDaoJDBC taskDao;
 
@@ -22,12 +23,9 @@ public class DeleteTaskServlet extends HttpServlet {
 
     @SneakyThrows
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
-
-        req.setCharacterEncoding("UTF-8");
-        long task_id = Long.parseLong(req.getParameter("id"));
-
-        taskDao.deleteTaskById(task_id);
-        resp.sendRedirect(req.getContextPath() + "/tasksmenu");
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+        String email = (String) req.getSession(false).getAttribute("email");
+        req.setAttribute("tasks", taskDao.findAllByPrimaryKey(email));
+        req.getRequestDispatcher("/WEB-INF/view/tasksMenuPage.jsp").forward(req, resp);
     }
 }

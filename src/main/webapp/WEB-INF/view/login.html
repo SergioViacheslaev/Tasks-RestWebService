@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="utf-8"/>
+    <title>
+        Login
+    </title>
+</head>
+<body>
+
+<a href="/showDeveloperInfo">
+<img src="/images/tomcat_logo.png" alt="tomcatLogo.png" width="320" height="160">
+</a>
+
+<form action="/login" method="post">
+    <p>
+        <input type="email" name="email" placeholder="Введите e-mail" required/>
+    </p>
+
+    <p>
+        <input type="password" name="password" placeholder="Введите пароль" required/>
+    </p>
+
+    <input type="submit" value="Login">
+    <input type="reset" value="Очистить">
+
+</form><br>
+
+<form action="/registration" method="get">
+    <input type="submit" value="Зарегистрироваться">
+</form>
+
+</body>
+</html>

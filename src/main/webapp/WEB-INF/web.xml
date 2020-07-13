@@ -3,15 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
-    <!--Index page for app-->
-    <servlet-mapping>
-        <servlet-name>GetStartPageServlet</servlet-name>
-        <url-pattern>/</url-pattern>
-    </servlet-mapping>
-    <servlet>
-        <servlet-name>GetStartPageServlet</servlet-name>
-        <servlet-class>ru.home.taskswebservice.servlets.GetStartPageServlet</servlet-class>
-    </servlet>
+
 
     <!--Get JSON task-->
     <servlet-mapping>
